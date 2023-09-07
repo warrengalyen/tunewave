@@ -1,1 +1,72 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+$red: (
+  50: #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  500: #f44336,
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  900: #b71c1c,
+  A100: #ff8a80,
+  A200: #ff5252,
+  A400: #ff1744,
+  A700: #ff0000,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: white,
+    A400: white,
+    A700: white,
+  ),
+);
+
+$tunewave-theme: (
+  primary: mat.define-palette($red, A700),
+  accent: mat.define-palette(mat.$grey-palette, 200),
+  warn: mat.define-palette(mat.$deep-orange-palette, A200),
+  is-dark: true,
+  foreground: mat.$dark-theme-foreground-palette,
+  background: (
+    status-bar: black,
+    app-bar: map_get(mat.$grey-palette, 900),
+    background: black,
+    hover: rgba(white, 0.04),
+    card: #212121,
+    dialog: map_get(mat.$grey-palette, 900),
+    disabled-button: rgba(white, 0.12),
+    raised-button: map-get(mat.$grey-palette, 800),
+    focused-button: rgba(white, 0.12),
+    selected-button: map_get(mat.$grey-palette, 900),
+    selected-disabled-button: map_get(mat.$grey-palette, 800),
+    disabled-button-toggle: black,
+    unselected-chip: map_get(mat.$grey-palette, 900),
+    disabled-list-option: black,
+    tooltip: map_get(mat.$grey-palette, 700),
+  ),
+);
+
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
