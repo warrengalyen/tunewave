@@ -9,8 +9,8 @@
     "lint": "ng lint",
     "docs": "compodoc -p ./tsconfig.json",
     "docs:json": "compodoc -p ./tsconfig.json -e json -d .",
-    "storybook": "yarn docs:json && sb dev ./.storybook/assets -p 6006",
-    "build-storybook": "yarn docs:json && sb build"
+    "storybook": "ng run tunewave:storybook",
+    "build-storybook": "ng run tunewave:build-storybook"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +44,7 @@
     "@storybook/addon-actions": "^7.4.0",
     "@storybook/addon-essentials": "^7.4.0",
     "@storybook/addon-links": "^7.4.0",
+    "@storybook/addon-mdx-gfm": "7.4.0",
     "@storybook/addons": "^7.4.0",
     "@storybook/angular": "^7.4.0",
     "@storybook/theming": "^7.4.0",
@@ -57,12 +58,14 @@
     "eslint-plugin-import": "2.28.1",
     "eslint-plugin-jsdoc": "46.5.1",
     "eslint-plugin-prefer-arrow": "1.2.3",
+    "eslint-plugin-storybook": "^0.6.13",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "storybook": "7.4.0",
     "typescript": "~5.1.3"
   }
 }
