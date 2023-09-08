@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/angular';
+import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
 import { LabelComponent } from './label.component';
@@ -7,12 +7,8 @@ export default {
   title: 'Components/Label',
   component: LabelComponent,
   argTypes: {},
-} as Meta;
-
-const Template: Story<LabelComponent> = (args: LabelComponent) => ({
-  component: LabelComponent,
-  props: args,
-  moduleMetadata: {
+  decorators: [
+    moduleMetadata({
     imports: [RouterModule.forRoot([], { useHash: true })],
     providers: [
       {
@@ -20,7 +16,12 @@ const Template: Story<LabelComponent> = (args: LabelComponent) => ({
         useValue: '/',
       },
     ],
-  },
+    }),
+  ],
+} as Meta;
+const Template: Story<LabelComponent> = (args: LabelComponent) => ({
+  component: LabelComponent,
+  props: args,
 });
 
 export const Simple = Template.bind({});

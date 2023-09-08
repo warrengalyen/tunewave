@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +18,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { IconComponent } from './common/components/icon.component';
 import { PlayerButtonComponent } from './common/components/player-button.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SongComponent } from './common/components/song.component';
+import { PlaylistComponent } from './common/components/playlist.component';
+import { A11yModule } from '@angular/cdk/a11y';
+import { CoverComponent } from './common/components/cover.component';
+import { MixComponent } from './common/components/mix.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +35,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MenuComponent,
     IconComponent,
     PlayerButtonComponent,
+    SongComponent,
+    PlaylistComponent,
+    CoverComponent,
+    MixComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,8 +51,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatMenuModule,
     MatProgressSpinnerModule,
+    A11yModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
