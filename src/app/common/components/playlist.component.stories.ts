@@ -55,5 +55,5 @@ export const Simple = Template.bind({});
 Simple.args = {
   name: 'Symphonic Metal',
   label: 'Delain, Nightwish, Within Temptation, Tristania',
-  cover: '/assets/tests/playlist_symphonic_metal.jpg',
+  cover: '/playlist_symphonic_metal.jpg',
 };

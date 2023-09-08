@@ -9,8 +9,8 @@
     "lint": "ng lint",
     "docs": "compodoc -p ./tsconfig.json",
     "docs:json": "compodoc -p ./tsconfig.json -e json -d .",
-    "storybook": "yarn docs:json && start-storybook -p 6006",
-    "build-storybook": "yarn docs:json && build-storybook"
+    "storybook": "yarn docs:json && sb dev ./.storybook/assets -p 6006",
+    "build-storybook": "yarn docs:json && sb build"
   },
   "private": true,
   "dependencies": {

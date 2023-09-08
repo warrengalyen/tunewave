@@ -57,5 +57,5 @@ Simple.args = {
   artist: 'Nightwish',
   routerLink: './',
   artistRouterLink: './',
-  cover: '/assets/tests/nightwish_endless_forms.jpg',
+  cover: '/nightwish_endless_forms.jpg',
 };

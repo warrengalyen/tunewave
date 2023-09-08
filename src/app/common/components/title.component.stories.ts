@@ -47,7 +47,7 @@ export const WithAvatar = Template.bind({});
 WithAvatar.args = {
   head: 'Similar to',
   title: 'Armin Van Buuren',
-  avatarSrc: '/assets/tests/armin_van_buuren_small.jpg',
+  avatarSrc: '/armin_van_buuren_small.jpg',
   avatarStyle: 'round',
   routerLink: '/',
 };
