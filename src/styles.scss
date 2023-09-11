@@ -120,3 +120,24 @@ a:visited {
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
+
+.mat-dialog-container {
+  padding: 0 !important;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+*::-webkit-scrollbar-track {
+  background-color: mat.get-color-from-palette(map-get($tunewave-theme, background), app-bar);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: mat.get-color-from-palette(
+      map-get($tunewave-theme, foreground),
+      disabled-button
+  );
+}
+*::-webkit-scrollbar-button {
+  display: none;
+}
