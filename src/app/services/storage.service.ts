@@ -15,11 +15,11 @@ export class StorageService {
       return of(this.db);
     }
     return this.openDB((db) => {
-      db.createObjectStore('libraries');
-      db.createObjectStore('songs');
-      db.createObjectStore('albums');
-      db.createObjectStore('artists');
-      db.createObjectStore('covers');
+      db.createObjectStore('entries', { keyPath: 'path' });
+      // db.createObjectStore('songs');
+      // db.createObjectStore('albums');
+      // db.createObjectStore('artists');
+      // db.createObjectStore('covers');
     }).pipe(tap((db) => (this.db = db)));
   }
 
@@ -82,6 +82,7 @@ export class StorageService {
     return (obs) =>
       obs.pipe(
         this.get<T>(store, key),
+        // @ts-ignore
         concatMap((obj: T) => this.put(store, { ...obj, ...value }, key))
       );
   }
@@ -134,6 +135,13 @@ export class StorageService {
     return this.getDb().pipe(
       this.openTransaction([store], 'readwrite'),
       this.put(store, value, key)
+    );
+  }
+
+  getOne<T>(store: string, key: IDBValidKey): Observable<T> {
+    return this.getDb().pipe(
+      this.openTransaction([store], 'readonly'),
+      this.get<T>(store, key)
     );
   }
 
