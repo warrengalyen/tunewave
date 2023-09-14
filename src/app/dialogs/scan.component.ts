@@ -93,7 +93,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
             </div>
           </div>
           <p>An error occurred</p>
-          <p class="log">{{ error$ | async }}</p>
+          <p class="log" *ngIf="error$ | async as error">{{ error }}</p>
         </ng-container>
         <ng-container *ngIf="scannerState$ | async; let status">
           <div class="actions">
