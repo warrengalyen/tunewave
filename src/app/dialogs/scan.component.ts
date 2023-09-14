@@ -28,8 +28,9 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
             </div>
           </div>
           <p>Scanning...</p>
-          <p class="log">{{ latestScanned$ | async }}</p>
+          <p class="log">{{ log$ | async }}</p>
         </ng-container>
+
         <ng-container *ngIf="(scannerState$ | async) === parsing">
           <span class="step">2/3</span>
           <div class="progress">
@@ -42,13 +43,13 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
               <span>{{ progress$ | async | number: '1.0-0' }}%</span>
               <span class="sub small">
                 {{ parsed$ | async | number: '1.0-0' }}/{{
-                  scanned$ | async | number: '1.0-0'
+                scanned$ | async | number: '1.0-0'
                 }}
               </span>
             </div>
           </div>
           <p>Building library...</p>
-          <p class="log">{{ latestParsed$ | async }}</p>
+          <p class="log">{{ log$ | async }}</p>
         </ng-container>
 
         <ng-container *ngIf="(scannerState$ | async) === building">
@@ -80,6 +81,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
           <p>Library built</p>
           <p class="log">You can close this dialog</p>
         </ng-container>
+
         <ng-container *ngIf="(scannerState$ | async) === error">
           <div class="progress">
             <mat-progress-spinner
@@ -95,6 +97,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
           <p>An error occurred</p>
           <p class="log" *ngIf="error$ | async as error">{{ error }}</p>
         </ng-container>
+
         <ng-container *ngIf="scannerState$ | async; let status">
           <div class="actions">
             <button
@@ -117,7 +120,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 24px;
+        padding: 32px 24px 24px;
         position: relative;
       }
       .step {
@@ -177,8 +180,8 @@ export class ScanComponent {
   icons = Icons;
 
   error = ScannerStateEnum.error;
-  parsing = ScannerStateEnum.parsing;
   scanning = ScannerStateEnum.scanning;
+  parsing = ScannerStateEnum.extracting;
   building = ScannerStateEnum.building;
   success = ScannerStateEnum.initial;
 
@@ -195,8 +198,7 @@ export class ScanComponent {
   scanned$: Observable<number>;
   parsed$: Observable<number>;
   progress$: Observable<number>;
-  latestScanned$: Observable<string | null>;
-  latestParsed$: Observable<string | null>;
+  log$: Observable<string | null>;
   error$: Observable<any | null>;
 
   constructor(private scanner: ScannerFacade) {
@@ -208,10 +210,9 @@ export class ScanComponent {
 
     this.scannerState$ = scanner.state$;
     this.scanned$ = scanner.scannedCount$.pipe(throttle());
-    this.parsed$ = scanner.parsedCount$.pipe(throttle());
+    this.parsed$ = scanner.extractedCount$.pipe(throttle());
     this.progress$ = scanner.progress$.pipe(throttle());
-    this.latestScanned$ = scanner.latestScanned$.pipe(throttle());
-    this.latestParsed$ = scanner.latestParsed$.pipe(throttle());
+    this.log$ = scanner.log$.pipe(throttle());
     this.error$ = scanner.error$;
   }
 
