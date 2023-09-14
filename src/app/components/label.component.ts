@@ -64,6 +64,8 @@ export interface Link {
       .bottom {
         color: #aaa;
         font-weight: 400;
+        max-height: 38px;
+        overflow-y: hidden;
       }
       a {
         text-decoration: none;
