@@ -141,7 +141,7 @@ export class ExplorerComponent {
               ),
               tap((l) => this.subject.next(l))
             ),
-            // m$.pipe(filter(isDirectory)),
+            m$.pipe(filter(isDirectory))
             // m$.pipe(
             //   filter(isFile),
             //   concatMap((entry) => this.extractor.extract(entry)),

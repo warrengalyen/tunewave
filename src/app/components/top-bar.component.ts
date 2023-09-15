@@ -77,8 +77,8 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         align-items: center;
         color: rgba(255, 255, 255, 0.5);
       }
-      a.hover,
-      a:active {
+      a:hover,
+      a.active {
         color: white;
         text-decoration: none;
       }

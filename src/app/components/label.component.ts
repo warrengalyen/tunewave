@@ -60,12 +60,12 @@ export interface Link {
       .top {
         margin-bottom: 3px;
         font-weight: 500;
+        max-height: 38px;
+        overflow-y: hidden;
       }
       .bottom {
         color: #aaa;
         font-weight: 400;
-        max-height: 38px;
-        overflow-y: hidden;
       }
       a {
         text-decoration: none;

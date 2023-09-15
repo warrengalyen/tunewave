@@ -3,7 +3,7 @@ import { Except } from '@app/utils/types.util';
 export interface Album {
   id: string;
   name: string;
-  artistId: string;
+  artist?: string;
   year?: number;
   pictureKey?: IDBValidKey;
 }

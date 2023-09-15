@@ -55,7 +55,7 @@ class CoverTestComponent {
 
 export default {
   title: 'Components/Cover',
-  component: m,
+  component: CoverTestComponent,
   argTypes: {},
   decorators: [
     moduleMetadata({
