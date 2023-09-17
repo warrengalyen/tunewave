@@ -55,7 +55,7 @@ export const Simple = Template.bind({});
 Simple.args = {
   name: 'Endless Forms Most Beautiful',
   artist: 'Nightwish',
-  routerLink: './',
+  albumRouterLink: './',
   artistRouterLink: './',
   cover: '/nightwish_endless_forms.jpg',
 };
