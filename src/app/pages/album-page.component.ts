@@ -1,40 +1,48 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Icons } from '@app/utils/icons.util';
-import { Observable } from 'rxjs';
-import { Artist } from '@app/models/artist.model';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Album } from '@app/models/album.model';
 import { map } from 'rxjs/operators';
-import { AlbumWithCover } from '@app/models/album.model';
-import { SongWithCover } from '@app/models/song.model';
+import { Song } from '@app/models/song.model';
+import { Icons } from '@app/utils/icons.util';
 
-export type ArtistPageInfo = {
-  artist: Artist;
+export type AlbumPageInfo = {
+  album: Album;
+  songs: Song[];
   cover: string | undefined;
-  albums$: Observable<AlbumWithCover[]>;
-  songs$: Observable<SongWithCover[]>;
 };
 
 @Component({
-  selector: 'app-artist-page',
+  selector: 'app-album-page',
   template: `
     <ng-container *ngIf="info$ | async as info">
       <header>
-        <div class="cover">
-          <img [src]="info.cover" alt="cover" />
-        </div>
-        <div class="shadow"></div>
         <app-container-page class="header-container">
-          <app-title [title]="info.artist.name"></app-title>
+          <div class="info">
+            <div class="cover" style="--aspect-ratio:1">
+              <img [src]="info.cover" alt="cover" />
+            </div>
+            <div class="metadata">
+              <app-title [title]="info.album.name"></app-title>
+              <p>
+                Album •
+                <a [routerLink]="['/', 'artist', info.album.artistId]">{{
+                  info.album.artist
+                  }}</a>
+                • {{ info.album.year }}
+              </p>
+              <p class="stats">
+                {{ info.songs.length }} titres •
+                {{ getLength(info.songs) }} minutes
+              </p>
+            </div>
+          </div>
           <div class="actions">
-            <button mat-stroked-button class="primary">
-              <app-icon [path]="icons.shuffle"></app-icon>
-              <span>SHUFFLE</span>
+            <button mat-stroked-button class="play-button">
+              <app-icon [path]="icons.play"></app-icon>
+              <span>PLAY</span>
             </button>
-            <button mat-stroked-button class="primary">
-              <app-icon [path]="icons.radio"></app-icon>
-              <span>RADIO</span>
-            </button>
-            <button mat-stroked-button>
+            <button mat-stroked-button class="shuffle-button">
               <app-icon [path]="icons.heartOutline"></app-icon>
               <span>ADD TO FAVORITES</span>
             </button>
@@ -42,24 +50,8 @@ export type ArtistPageInfo = {
           </div>
         </app-container-page>
       </header>
-      <app-container-page class="content">
-        <app-title [title]="'Songs'" size="small"></app-title>
-        <ng-container *ngIf="info.songs$ | async as songs">
-          <app-song-list [songs]="songs"></app-song-list>
-        </ng-container>
-        <app-title [title]="'Albums'" size="small"></app-title>
-        <app-h-list buttonsTopPosition="113px">
-          <app-album
-              appHListItem
-              class="album"
-              *ngFor="let album of info.albums$ | async"
-              [name]="album.name"
-              [artist]="album.year?.toString(10)"
-              [cover]="album.cover"
-              [albumRouterLink]="['/', 'album', album.id]"
-          >
-          </app-album>
-        </app-h-list>
+      <app-container-page>
+        <app-track-list [songs]="info.songs"></app-track-list>
       </app-container-page>
     </ng-container>
   `,
@@ -75,84 +67,87 @@ export type ArtistPageInfo = {
         margin-bottom: 64px;
         padding-top: 64px;
         background-color: #1d1d1d;
-        box-sizing: border-box;
-        position: relative;
-        overflow: hidden;
       }
       .header-container {
-        padding-top: 332px;
-        margin-bottom: 8px;
+        min-height: 264px;
+        margin-top: 64px;
+        margin-bottom: 64px;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
+        justify-content: center;
         position: relative;
         box-sizing: border-box;
-        z-index: 2;
-      }
-      .shadow {
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        z-index: 1;
-        background: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 1),
-            transparent 33%,
-            transparent 87%,
-            rgba(0, 0, 0, 0.5) 100%
-        );
       }
       .cover {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        filter: blur(2px);
-        transform: translateY(calc(-50% + 290px));
+        width: 264px;
+        margin-right: 64px;
+        border-radius: 4px;
+        overflow: hidden;
       }
-      .cover img {
-        width: 100%;
+      .info {
+        display: flex;
+        align-items: center;
+      }
+      .metadata p {
+        color: #aaa;
+      }
+      .metadata p a {
+        text-decoration: none;
+      }
+      .metadata p a:hover {
+        text-decoration: underline;
+      }
+      .stats {
+        margin-top: 4px;
       }
       app-title {
-        margin-top: 64px;
         margin-bottom: 16px;
+      }
+      .actions {
+        margin-top: 40px;
+      }
+      @media (min-width: 936px) {
+        .header-container {
+          padding-left: 312px;
+        }
+        .cover {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
       }
       button {
         padding: 0 32px;
         display: inline-flex;
         align-items: center;
-        margin-right: 8px;
-        border-color: rgb(170, 170, 170) !important;
       }
       button app-icon {
         margin-right: 8px;
       }
-      button.primary {
+      .play-button {
         background-color: white;
         color: black;
+        margin-right: 16px;
       }
-      .album {
-        margin: 0 24px 0 0;
-        width: 226px;
-      }
-      .album:last-of-type {
-        margin-right: 0;
-      }
-      .content {
-        padding-bottom: 128px;
+      .shuffle-button {
+        border-color: rgb(170, 170, 170);
       }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ArtistPageComponent implements OnInit {
+export class AlbumPageComponent implements OnInit {
   icons = Icons;
-  info$!: Observable<ArtistPageInfo>;
+  info$!: Observable<AlbumPageInfo>;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
+  }
+
+  getLength(songs: Song[]): number {
+    const sec = songs.reduce((acc, song) => acc + (song.duration || 0), 0);
+    return Math.floor(sec / 60);
   }
 }

@@ -5,13 +5,13 @@ import { Artist } from '@app/models/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { AlbumWithCover } from '@app/models/album.model';
-import { Song } from '@app/models/song.model';
+import { SongWithCover } from '@app/models/song.model';
 
 export type ArtistPageInfo = {
   artist: Artist;
   cover: string | undefined;
   albums$: Observable<AlbumWithCover[]>;
-  songs$: Observable<Song[]>;
+  songs$: Observable<SongWithCover[]>;
 };
 
 @Component({
@@ -19,9 +19,10 @@ export type ArtistPageInfo = {
   template: `
     <ng-container *ngIf="info$ | async as info">
       <header>
-        <div class="cover">
-          <img [src]="info.cover" alt="cover" />
-        </div>
+        <div
+          class="cover"
+          [style.backgroundImage]="'url(' + info.cover + ')'"
+        ></div>
         <div class="shadow"></div>
         <app-container-page class="header-container">
           <app-title [title]="info.artist.name"></app-title>
@@ -42,7 +43,7 @@ export type ArtistPageInfo = {
           </div>
         </app-container-page>
       </header>
-      <app-container-page>
+      <app-container-page class="content">
         <app-title [title]="'Songs'" size="small"></app-title>
         <ng-container *ngIf="info.songs$ | async as songs">
           <app-song-list [songs]="songs"></app-song-list>
@@ -54,7 +55,7 @@ export type ArtistPageInfo = {
             class="album"
             *ngFor="let album of info.albums$ | async"
             [name]="album.name"
-            [artist]="album.year?.toString(10)"
+            [year]="album.year"
             [cover]="album.cover"
             [albumRouterLink]="['/', 'album', album.id]"
           >
@@ -75,13 +76,12 @@ export type ArtistPageInfo = {
         margin-bottom: 64px;
         padding-top: 64px;
         background-color: #1d1d1d;
-        height: 668px;
         box-sizing: border-box;
         position: relative;
         overflow: hidden;
       }
       .header-container {
-        margin-top: 64px;
+        padding-top: 332px;
         margin-bottom: 8px;
         display: flex;
         flex-direction: column;
@@ -106,15 +106,19 @@ export type ArtistPageInfo = {
       }
       .cover {
         position: absolute;
-        top: -50%;
+        top: 0;
         left: 0;
-        width: 100%;
+        bottom: 0;
+        right: 0;
         filter: blur(2px);
+        background-size: cover;
+        background-position: center center;
       }
       .cover img {
         width: 100%;
       }
       app-title {
+        margin-top: 64px;
         margin-bottom: 16px;
       }
       button {
@@ -137,6 +141,9 @@ export type ArtistPageInfo = {
       }
       .album:last-of-type {
         margin-right: 0;
+      }
+      .content {
+        padding-bottom: 128px;
       }
     `,
   ],
