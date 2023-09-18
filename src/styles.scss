@@ -3,7 +3,7 @@
 
 $tunewave-theme: (
   primary: mat.define-palette(mat.$light-green-palette, A400),
-  accent: mat.define-palette(mat.$light-blue-palette, A400),
+  accent: mat.define-palette(mat.$gray-palette, 200),
   warn: mat.define-palette(mat.$deep-orange-palette, A200),
   is-dark: true,
   foreground: mat.$dark-theme-foreground-palette,
