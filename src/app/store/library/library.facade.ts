@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/models/entry.model';
-import { from, Observable, of, throwError } from 'rxjs';
+import { EMPTY, from, Observable, of, throwError } from 'rxjs';
 import { concatMap, filter, map } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover } from '@app/models/album.model';
-import { Artist, ArtistWithCover } from '@app/models/artist.model';
+import {
+  Artist,
+  ArtistWithCover,
+  ArtistWithCover$,
+} from '@app/models/artist.model';
 import { getCover, Picture } from '@app/models/picture.model';
 import { Song } from '@app/models/song.model';
 
@@ -90,22 +94,46 @@ export class LibraryFacade {
     );
   }
 
+  getArtists(
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction: IDBCursorDirection = 'next'
+  ): Observable<ArtistWithCover$> {
+    return this.storage.open$(['artists']).pipe(
+      concatMap((transaction) =>
+        this.storage
+          .walk$<Artist>(transaction, 'artists', index, query, direction)
+          .pipe(
+            map(({ value }) => value),
+            map((artist) => ({
+              ...artist,
+              cover$: artist.pictureKey
+                ? this.storage
+                  .get$('pictures', artist.pictureKey)
+                  .pipe(map((picture) => getCover(picture as Picture)))
+                : EMPTY,
+            }))
+          )
+      )
+    );
+  }
+
   getEntry = (path: string): Observable<Entry | undefined> =>
     this.storage.get$('entries', path);
 
-    getRootEntry(): Observable<Entry | undefined> {
-        return this.storage
-            .open$(['entries'])
-            .pipe(
-                concatMap((t) =>
-                    this.storage.find$<Entry>(
-                        t,
-                        'entries',
-                        (entry) => entry.parent === undefined
-                    )
-                )
-            );
-    }
+  getRootEntry(): Observable<Entry | undefined> {
+    return this.storage
+      .open$(['entries'])
+      .pipe(
+        concatMap((t) =>
+          this.storage.find$<Entry>(
+            t,
+            'entries',
+            (entry) => entry.parent === undefined
+          )
+        )
+      );
+  }
 
   getChildrenEntries = (directory: DirectoryEntry): Observable<Entry[]> =>
     this.storage.open$(['entries']).pipe(
@@ -170,29 +198,29 @@ export class LibraryFacade {
     );
   }
 
-    async requestPermissionPromise(
-        fileHandle: FileSystemHandle,
-        readWrite = false
-    ) {
-        let options = {};
-        if (readWrite) {
-            options = { mode: 'readwrite' };
-        }
-        // Check if permission was already granted. If so, return true.
-        if ((await fileHandle.queryPermission(options)) === 'granted') {
-            return true;
-        }
-        // Request permission. If the user grants permission, return true.
-        if ((await fileHandle.requestPermission(options)) === 'granted') {
-            return true;
-        }
-        // The user didn't grant permission, so return false.
-        return false;
+  async requestPermissionPromise(
+    fileHandle: FileSystemHandle,
+    readWrite = false
+  ) {
+    let options = {};
+    if (readWrite) {
+      options = { mode: 'readwrite' };
     }
+    // Check if permission was already granted. If so, return true.
+    if ((await fileHandle.queryPermission(options)) === 'granted') {
+      return true;
+    }
+    // Request permission. If the user grants permission, return true.
+    if ((await fileHandle.requestPermission(options)) === 'granted') {
+      return true;
+    }
+    // The user didn't grant permission, so return false.
+    return false;
+  }
 
-    requestPermission(handle: FileSystemHandle): Observable<void> {
-        return from(this.requestPermissionPromise(handle)).pipe(
-            concatMap((perm) => (perm ? of(void 0) : throwError('Permission denied')))
-        );
-    }
+  requestPermission(handle: FileSystemHandle): Observable<void> {
+    return from(this.requestPermissionPromise(handle)).pipe(
+      concatMap((perm) => (perm ? of(void 0) : throwError('Permission denied')))
+    );
+  }
 }
