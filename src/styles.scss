@@ -43,7 +43,7 @@ $tunewave-theme: (
   font-weight: 700;
   src: local('YouTube Sans'),
   url('/assets/fonts/youtube-sans-bold.ttf') format('truetype');
-  font-display: swap;
+  font-display: block;
 }
 
 /* roboto-300 - latin */
@@ -67,7 +67,7 @@ $tunewave-theme: (
   url('/assets/fonts/roboto-v19-latin-regular.woff2') format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
   url('/assets/fonts/roboto-v19-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-  font-display: block;
+  font-display: swap;
 }
 
 /* roboto-500 - latin */
@@ -107,7 +107,10 @@ html {
   scroll-behavior: smooth;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -123,7 +126,12 @@ a,
 a:visited {
   color: inherit;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }
 
