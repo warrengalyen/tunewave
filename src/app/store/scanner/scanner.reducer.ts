@@ -120,7 +120,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     })),
     on(Actions.buildAlbumSuccess, (state, { album }) => ({
       ...state,
-      stepSub: `${album.artist} - ${album.name}`,
+      stepSub: `${album.artists[0]} - ${album.name}`,
       progressDisplay: `${format(state.albumsCount + 1)}`,
       progressDisplaySub: state.albumsCount + 1 > 1 ? 'albums' : 'album',
       albumsCount: state.albumsCount + 1,
