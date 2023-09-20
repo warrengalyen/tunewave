@@ -12,7 +12,7 @@ $tunewave-theme: (
     app-bar: map_get(mat.$grey-palette, 900),
     background: black,
     hover: rgba(white, 0.04),
-    card: #212121,
+    card: #333,
     dialog: map_get(mat.$grey-palette, 900),
     disabled-button: rgba(white, 0.12),
     raised-button: map-get(mat.$grey-palette, 800),
@@ -177,4 +177,10 @@ h6 {
     left: 0;
     height: 100%;
   }
+}
+
+.dark-snack {
+  color: $text-color;
+  background-color: #212121;
+  // margin-bottom: 120px !important;
 }
