@@ -53,7 +53,10 @@ const Template: Story<PlaylistComponent> = (args: PlaylistComponent) => ({
 
 export const Simple = Template.bind({});
 Simple.args = {
-  name: 'Symphonic Metal',
-  label: 'Delain, Nightwish, Within Temptation, Tristania',
-  cover: '/playlist_symphonic_metal.jpg',
+  playlist: {
+    title: 'Symphonic Metal',
+    description: 'Delain, Nightwish, Within Temptation, Tristania',
+    songs: [],
+    createdOn: new Date(),
+  },
 };
