@@ -78,6 +78,7 @@ const routes: Routes = [
       relativeLinkResolution: 'corrected',
       scrollPositionRestoration: 'disabled',
       anchorScrolling: 'enabled',
+      onSameUrlNavigation: 'reload',
     }),
   ],
   exports: [RouterModule],
