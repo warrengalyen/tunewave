@@ -110,7 +110,7 @@ import { map } from 'rxjs/operators';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistDialogComponent implements OnInit {
+export class PlaylistNewComponent implements OnInit {
   @ViewChild('dialog', { static: true })
   dialog!: RoutedDialogDirective;
 
@@ -147,7 +147,7 @@ export class PlaylistDialogComponent implements OnInit {
 
   async createPlaylist() {
     if (this.form.valid) {
-      //await this.library.createPlaylist(this.form.getRawValue()).toPromise();
+      // await this.library.createPlaylist(this.form.getRawValue()).toPromise();
       await this.dialog.close();
     }
   }

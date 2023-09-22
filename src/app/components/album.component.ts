@@ -8,7 +8,6 @@ import {
 import { Icons } from '../utils/icons.util';
 import { PlayerState } from './player-button.component';
 
-// TODO generic value type
 @Component({
   selector: 'app-album',
   template: `

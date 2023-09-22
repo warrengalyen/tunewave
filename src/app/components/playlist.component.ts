@@ -11,7 +11,7 @@ import {
 import { Icons } from '../utils/icons.util';
 import { PlayerState } from './player-button.component';
 import { Playlist } from '@app/models/playlist.model';
-import { from, Observable, of } from 'rxjs';;
+import { from, Observable, of } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { concatMap, map, tap } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';

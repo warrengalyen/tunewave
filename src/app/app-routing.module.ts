@@ -19,7 +19,7 @@ import { concatMap, delay, filter, retry } from 'rxjs/operators';
 import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.component';
 import { LibrarySongsComponent } from '@app/pages/library-songs.component';
 import { defer, EMPTY, of, throwError } from 'rxjs';
-import { PlaylistDialogComponent } from '@app/dialogs/playlist-dialog.component';
+import { PlaylistNewComponent } from '@app/dialogs/playlist-new.component';
 import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
 import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
@@ -78,7 +78,7 @@ const routes: Routes = [
   {
     outlet: 'dialog',
     path: 'new-playlist',
-    component: PlaylistDialogComponent,
+    component: PlaylistNewComponent,
   },
 ];
 
@@ -109,7 +109,7 @@ export class AppRoutingModule {
 
           scroll$
             .pipe(
-              delay(1),
+              delay(5),
               concatMap(() =>
                 getPos$.pipe(
                   concatMap((pos) =>
@@ -117,7 +117,7 @@ export class AppRoutingModule {
                   )
                 )
               ),
-              retry(200)
+              retry(40)
             )
             .subscribe();
 
