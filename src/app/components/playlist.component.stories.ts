@@ -55,6 +55,7 @@ export const Simple = Template.bind({});
 Simple.args = {
   playlist: {
     title: 'Symphonic Metal',
+    hash: '123456',
     description: 'Delain, Nightwish, Within Temptation, Tristania',
     songs: [],
     createdOn: new Date(),
