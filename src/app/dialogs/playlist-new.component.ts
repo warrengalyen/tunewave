@@ -147,7 +147,7 @@ export class PlaylistNewComponent implements OnInit {
 
   async createPlaylist() {
     if (this.form.valid) {
-      await this.library.createPlaylist(this.form.getRawValue()).toPromise();
+      //await this.library.createPlaylist(this.form.getRawValue()).toPromise();
       await this.dialog.close();
     }
   }
