@@ -34,8 +34,8 @@ export interface PlayerData {
       color="primary"
       [step]="1"
       [min]="0"
-      [max]="max$ | async"
-      [value]="value$ | async"
+      [max]="(max$ | async)!"
+      [value]="(value$ | async)!"
       [tabIndex]="-1"
     ></mat-slider>
     <mat-slider
@@ -43,9 +43,9 @@ export interface PlayerData {
       color="primary"
       [step]="1"
       [min]="0"
-      [max]="max$ | async"
-      [value]="value$ | async"
-      [disabled]="seekerDisabled$ | async"
+      [max]="(max$ | async)!"
+      [value]="(value$ | async)!"
+      [disabled]="(seekerDisabled$ | async)!"
       (change)="seek($event)"
       cdkMonitorSubtreeFocus
       #seeker
