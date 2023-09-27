@@ -41,7 +41,13 @@ export const selectPlaying = createSelector(
   (state) => state.playing
 );
 
+export const selectLoading = createSelector(
+  selectPlayerState,
+  (state) => state.loading
+);
+
 export const selectDuration = createSelector(
   selectPlayerState,
   (state) => state.duration || 0
 );
+
