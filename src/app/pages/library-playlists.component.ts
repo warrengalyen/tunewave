@@ -46,22 +46,22 @@ import { scanArray } from '@app/utils/scan-array.util';
         >
           <app-playlist [playlist]="playlist"></app-playlist>
         </div>
-        <div class="playlist likes">
-          <app-playlist-likes></app-playlist-likes>
-        </div>
-        <ng-container
-          *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
-        >
-          <div class="playlist" *ngIf="!likes || !!playlist.likedOn">
-            <app-playlist
-              [playlist]="playlist"
-              (update)="playlistUpdate()"
-            ></app-playlist>
-          </div>
-        </ng-container>
-      </div>
-    </app-library-content>
-  `,
+        <!--        <div class="playlist likes">
+             <app-playlist-likes></app-playlist-likes>
+          </div>-->
+           <ng-container
+             *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
+           >
+             <div class="playlist" *ngIf="!likes || !!playlist.likedOn">
+               <app-playlist
+                 [playlist]="playlist"
+                 (update)="playlistUpdate()"
+               ></app-playlist>
+             </div>
+           </ng-container>
+         </div>
+       </app-library-content>
+`,
   styles: [
     `
       :host {

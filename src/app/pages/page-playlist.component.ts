@@ -48,49 +48,49 @@ export interface PagePlaylistData {
           </div>
           <div class="actions">
             <ng-container *ngIf="songs$ | async as songs">
-              <button
-                mat-stroked-button
-                color="accent"
-                *ngIf="songs.length === 0"
-              >
-                <app-icon [path]="icons.playlistEdit"></app-icon>
-                <span>Edit playlist</span>
-              </button>
-              <button
-                mat-raised-button
-                class="play-button"
-                color="accent"
-                *ngIf="songs.length > 0"
-                (click)="shufflePlay(songs)"
-              >
-                <app-icon [path]="icons.shuffle"></app-icon>
-                <span>Shuffle</span>
-              </button>
-              <button
-                mat-stroked-button
-                class="shuffle-button"
-                color="accent"
-                *ngIf="songs.length > 0"
-              >
-                <app-icon [path]="icons.heartOutline"></app-icon>
-                <span>Add to your likes</span>
-              </button>
-            </ng-container>
-            <app-menu [disableRipple]="true"></app-menu>
-          </div>
-        </app-container-page>
-      </header>
-      <app-container-page>
-        <app-song-list
-          [songs]="songs"
-          *ngIf="songs$ | async as songs"
-        ></app-song-list>
-        <p class="empty" *ngIf="(songs$ | async)?.length === 0">
-          No songs in this playlist yet
-        </p>
-      </app-container-page>
-    </ng-container>
-  `,
+              <!--              <button
+               mat-stroked-button
+               color="accent"
+               *ngIf="songs.length === 0"
+             >
+               <app-icon [path]="icons.playlistEdit"></app-icon>
+               <span>Edit playlist</span>
+             </button>-->
+             <button
+               mat-raised-button
+               class="play-button"
+               color="accent"
+               *ngIf="songs.length > 0"
+               (click)="shufflePlay(songs)"
+             >
+               <app-icon [path]="icons.shuffle"></app-icon>
+               <span>Shuffle</span>
+             </button>
+             <button
+               mat-stroked-button
+               class="shuffle-button"
+               color="accent"
+               *ngIf="songs.length > 0"
+             >
+               <app-icon [path]="icons.heartOutline"></app-icon>
+               <span>Add to your likes</span>
+             </button>
+           </ng-container>
+            <!--<app-menu [disableRipple]="true"></app-menu>-->
+         </div>
+       </app-container-page>
+     </header>
+     <app-container-page>
+       <app-song-list
+         [songs]="songs"
+         *ngIf="songs$ | async as songs"
+       ></app-song-list>
+       <p class="empty" *ngIf="(songs$ | async)?.length === 0">
+         No songs in this playlist yet
+       </p>
+     </app-container-page>
+   </ng-container>
+`,
   styleUrls: ['../styles/page-header.component.scss'],
   styles: [
     `
