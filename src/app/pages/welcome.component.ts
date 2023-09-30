@@ -16,7 +16,7 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
     <div class="bg"></div>
     <ng-template #welcomeDialog>
       <div class="action">
-        <app-title title="TuneWave"></app-title>
+        <app-title>TuneWave</app-title>
         <p>
           Welcome to TuneWave! TuneWave is a serverless audio player for
           your music library right in your browser. Try it now!
@@ -74,8 +74,6 @@ export class WelcomeComponent implements OnInit {
   constructor(private scanner: ScannerFacade, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    console.log('init');
-
     this.dialog
       .open(this.welcomeDialog, {
         height: 'auto',
