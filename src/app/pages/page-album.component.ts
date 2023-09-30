@@ -89,6 +89,7 @@ export type PageAlbumData = {
             <app-menu
               [disableRipple]="true"
               [menuItems]="menuItems$ | async"
+              [hasBackdrop]="true"
             ></app-menu>
           </div>
         </app-container-page>
