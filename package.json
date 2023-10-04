@@ -7,7 +7,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "docs": "compodoc -p ./tsconfig.json"
+    "docs": "compodoc -p ./tsconfig.json",
+    "cypress:open": "start-server-and-test start 4200 \"cypress open\"",
+    "cypress:verify": "cypress verify",
+    "cypress:run": "start-server-and-test start 4200 \"cypress run\""
   },
   "private": true,
   "dependencies": {
@@ -50,6 +53,7 @@
     "@types/wicg-mediasession": "^1.1.5",
     "@typescript-eslint/eslint-plugin": "6.6.0",
     "@typescript-eslint/parser": "6.6.0",
+    "cypress": "^13.3.0",
     "eslint": "^8.48.0",
     "eslint-plugin-import": "2.28.1",
     "eslint-plugin-jsdoc": "46.5.1",
@@ -62,7 +66,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "prettier": "^3.0.3",
-    "storybook": "7.4.0",
+    "start-server-and-test": "^2.0.1",
     "typescript": "~5.1.3"
   }
 }
