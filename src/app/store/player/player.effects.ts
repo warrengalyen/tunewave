@@ -14,6 +14,8 @@ import {
   setLoading,
   setNextIndex,
   setPlaying,
+  setVolume,
+  toggleMute,
 } from '@app/store/player/player.actions';
 import {
   catchError,
@@ -115,6 +117,29 @@ export class PlayerEffects implements OnRunEffects {
     }
   );
 
+  volume$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(setVolume),
+        tap(({ volume }) => this.audio.setVolume(volume))
+      ),
+    {
+      dispatch: false,
+    }
+  );
+  volume2$ = createEffect(() =>
+    this.audio.volume$.pipe(map((volume) => setVolume({ volume })))
+  );
+  mute$ = createEffect(
+    () => () =>
+      this.actions$.pipe(
+        ofType(toggleMute),
+        tap(() => this.audio.toggleMute())
+      ),
+    {
+      dispatch: false,
+    }
+  );
   playing$ = createEffect(() =>
     this.audio.playing$.pipe(map((playing) => setPlaying({ playing })))
   );

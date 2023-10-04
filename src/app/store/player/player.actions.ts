@@ -41,3 +41,8 @@ export const setDuration = createAction(
 );
 
 export const shuffle = createAction('player/shuffle');
+export const toggleMute = createAction('player/toggleMute');
+export const setVolume = createAction(
+  'player/volume',
+  props<{ volume: number }>()
+);

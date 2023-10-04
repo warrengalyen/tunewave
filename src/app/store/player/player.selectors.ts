@@ -51,3 +51,11 @@ export const selectDuration = createSelector(
   (state) => state.duration || 0
 );
 
+export const selectMuted = createSelector(
+  selectPlayerState,
+  (state) => state.muted
+);
+export const selectVolume = createSelector(
+  selectPlayerState,
+  (state) => state.volume
+);

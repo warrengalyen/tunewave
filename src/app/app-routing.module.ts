@@ -147,8 +147,8 @@ export class AppRoutingModule {
         } else if (e.position) {
           // backward navigation
           const p = e.position;
-          setTimeout(() => viewportScroller.scrollToPosition(p), 250);
-
+          // setTimeout(() => viewportScroller.scrollToPosition(p), 250);
+          //
           const getPos$ = defer(() => of(viewportScroller.getScrollPosition()));
           const scroll$ = defer(() => of(viewportScroller.scrollToPosition(p)));
 
@@ -159,7 +159,7 @@ export class AppRoutingModule {
                   m$.pipe(
                     concatMap(() =>
                       fromEvent(window, 'scroll').pipe(
-                        debounceTime(150),
+                        debounceTime(100),
                         first()
                       )
                     ),

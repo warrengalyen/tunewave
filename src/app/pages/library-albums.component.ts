@@ -82,7 +82,7 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
 
   @HostListener('window:scroll')
   @HostListener('click')
-  closeMenu() {
+  closeMenu(): void {
     super.closeMenu();
   }
 
@@ -114,9 +114,9 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
     );
   }
 
-  trackBy = (index: number, album: AlbumWithCover$) => album.name;
+  trackBy = (index: number, album: AlbumWithCover$): string => album.name;
 
-  getHash(albumArtist: string) {
+  getHash(albumArtist: string): string {
     return hash(albumArtist);
   }
 

@@ -39,7 +39,6 @@ import { SearchComponent } from './pages/search.component';
 import { HistoryComponent } from './pages/history.component';
 import { ExplorerComponent } from './pages/explorer.component';
 import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
-import { LibrarySettingsComponent } from './dialogs/library-settings.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SettingsComponent } from './dialogs/settings.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -92,7 +91,6 @@ import { RecentActivityComponent } from './components/recent-activity.component'
 import { WelcomeComponent } from './pages/welcome.component';
 import { RootComponent } from './root.component';
 import { IconLikes2Component } from '@app/components/icon-likes2.component';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -118,7 +116,6 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     HistoryComponent,
     ExplorerComponent,
     RoutedDialogDirective,
-    LibrarySettingsComponent,
     SettingsComponent,
     ScanComponent,
     PageAlbumComponent,
@@ -183,7 +180,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       },
     }),
     EffectsModule.forRoot([LibraryEffects, ScannerEffects, PlayerEffects]),
-    StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
+    // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
   ],
   providers: [
     FileService,
