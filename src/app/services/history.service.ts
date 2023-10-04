@@ -11,7 +11,7 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 export class HistoryService {
   constructor(
     private storage: StorageService,
-    private library: LibraryFacade
+    private library: LibraryFacade,
   ) {}
 
   latestPlayedAlbums$(): Observable<AlbumWithCover$> {

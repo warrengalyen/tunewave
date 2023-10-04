@@ -96,7 +96,7 @@ export class PagePlaylistLikesComponent implements OnInit {
         this.songs$
           .pipe(
             first(),
-            tap((songs) => this.helper.addSongsToQueue(songs, true))
+            tap((songs) => this.helper.addSongsToQueue(songs, true)),
           )
           .subscribe();
       },
@@ -108,7 +108,7 @@ export class PagePlaylistLikesComponent implements OnInit {
         this.songs$
           .pipe(
             first(),
-            tap((songs) => this.helper.addSongsToQueue(songs, false))
+            tap((songs) => this.helper.addSongsToQueue(songs, false)),
           )
           .subscribe();
       },
@@ -117,7 +117,7 @@ export class PagePlaylistLikesComponent implements OnInit {
 
   constructor(
     private library: LibraryFacade,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
   ) {}
 
   ngOnInit(): void {
@@ -125,7 +125,7 @@ export class PagePlaylistLikesComponent implements OnInit {
       map(({ value }) => value),
       scanArray(),
       startWith([]),
-      shareReplay(1)
+      shareReplay(1),
     );
   }
 

@@ -94,7 +94,8 @@ import { WithTrigger } from '@app/classes/with-trigger';
 })
 export class LibrarySongsComponent
   extends WithTrigger
-  implements OnInit, OnDestroy {
+  implements OnInit, OnDestroy
+{
   @ViewChild('addToPlaylist', { static: true })
   addToPlaylist!: TemplateRef<any>;
 
@@ -128,7 +129,7 @@ export class LibrarySongsComponent
   constructor(
     private library: LibraryFacade,
     private route: ActivatedRoute,
-    private player: PlayerFacade
+    private player: PlayerFacade,
   ) {
     super();
   }
@@ -160,10 +161,10 @@ export class LibrarySongsComponent
           tap(() => (this.songsObs = [])),
           tap(() => (this.last = undefined)),
           tap(({ index, direction, likes }) =>
-            this.pushSongs(index, direction, likes)
-          )
+            this.pushSongs(index, direction, likes),
+          ),
         )
-        .subscribe()
+        .subscribe(),
     );
   }
 
@@ -174,15 +175,15 @@ export class LibrarySongsComponent
   pushSongs(
     index: string,
     direction: IDBCursorDirection,
-    likes: boolean
+    likes: boolean,
   ): void {
     this.loadMore = false;
 
     const query: IDBKeyRange | null = !this.last
       ? null
       : direction === 'next'
-        ? IDBKeyRange.lowerBound(this.last.key, false)
-        : IDBKeyRange.upperBound(this.last.key, false);
+      ? IDBKeyRange.lowerBound(this.last.key, false)
+      : IDBKeyRange.upperBound(this.last.key, false);
 
     const predicate: ((song: Song) => boolean) | undefined = likes
       ? (song) => !!song.likedOn
@@ -193,8 +194,8 @@ export class LibrarySongsComponent
         skipWhile((res) =>
           query
             ? res.key !== this.last?.key &&
-            res.primaryKey !== this.last?.primaryKey
-            : false
+              res.primaryKey !== this.last?.primaryKey
+            : false,
         ),
         skip(query ? 1 : 0),
         take(150),
@@ -204,7 +205,7 @@ export class LibrarySongsComponent
             value: SongWithCover$;
             key: IDBValidKey;
             primaryKey: IDBValidKey;
-          }[]
+          }[],
         ),
         publish((m$) =>
           merge(
@@ -214,13 +215,13 @@ export class LibrarySongsComponent
               tap(() => (this.loadMore = true)),
               tapError(() => (this.loadMore = false)),
               concatMap(() => EMPTY),
-              catchError(() => EMPTY)
+              catchError(() => EMPTY),
             ),
             m$.pipe(map((values) => values.map((v) => v.value))),
-            2
-          )
-        )
-      )
+            2,
+          ),
+        ),
+      ),
     );
   }
 

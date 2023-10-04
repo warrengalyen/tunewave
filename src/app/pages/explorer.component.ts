@@ -20,7 +20,7 @@ interface FileSystemTreeNode {
 
 const isDirectChild = (
   parent: FileSystemTreeNode,
-  child: FileSystemTreeNode
+  child: FileSystemTreeNode,
 ): boolean =>
   parent.path !== child.path &&
   child.path.replace(/\/[^\/]+$/, '') === parent.path;
@@ -99,8 +99,8 @@ export class ExplorerComponent {
 
   treeControl = new NestedTreeControl<FileSystemTreeNode>((node) =>
     this.subject.pipe(
-      map((nodes) => nodes.filter((n) => isDirectChild(node, n)))
-    )
+      map((nodes) => nodes.filter((n) => isDirectChild(node, n))),
+    ),
   );
 
   firstNode$ = this.subject.pipe(map((nodes) => [{ ...nodes[0] }]));
@@ -108,7 +108,7 @@ export class ExplorerComponent {
   icons = Icons;
 
   constructor(
-    private files: FileService // private extractor: ExtractorService // private audio: AudioService
+    private files: FileService, // private extractor: ExtractorService // private audio: AudioService
   ) {}
 
   @HostListener('window:scroll', ['$event'])
@@ -137,11 +137,11 @@ export class ExplorerComponent {
                     hasChild: isDirectory(val),
                   },
                 ],
-                [] as FileSystemTreeNode[]
+                [] as FileSystemTreeNode[],
               ),
-              tap((l) => this.subject.next(l))
+              tap((l) => this.subject.next(l)),
             ),
-            m$.pipe(filter(isDirectory))
+            m$.pipe(filter(isDirectory)),
             // m$.pipe(
             //   filter(isFile),
             //   concatMap((entry) => this.extractor.extract(entry)),
@@ -150,8 +150,8 @@ export class ExplorerComponent {
             //   concatMap((e) => e.entry.handle.getFile())
             //   // concatMap((file) => this.audio.play(file))
             // )
-          )
-        )
+          ),
+        ),
       )
       .subscribe();
   }

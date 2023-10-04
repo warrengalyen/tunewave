@@ -75,7 +75,7 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
     private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     super();
   }
@@ -98,7 +98,7 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.likes = sort.likes))
+      tap((sort) => (this.likes = sort.likes)),
     );
 
     this.albums$ = sort$.pipe(
@@ -110,7 +110,7 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
         return this.library
           .getAlbums(sort.index, null, sort.direction, predicate)
           .pipe(scanArray());
-      })
+      }),
     );
   }
 

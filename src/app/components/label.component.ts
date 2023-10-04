@@ -32,7 +32,7 @@ type BottomLabel = undefined | string | Link | (undefined | string | Link)[];
           <a
             *ngIf="asLink(label); let label; else: labelText"
             [routerLink]="label.routerLink"
-          >{{ label.text }}</a
+            >{{ label.text }}</a
           >
           <ng-template #labelText>
             <span>{{ label }}</span>
@@ -99,8 +99,8 @@ export class LabelComponent {
     return Array.isArray(val)
       ? (val as Link[]).filter((a) => a)
       : val
-        ? [val]
-        : [];
+      ? [val]
+      : [];
   }
 
   asLink(val: undefined | string | Link): false | Link {

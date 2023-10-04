@@ -22,7 +22,7 @@ export class ComponentHelperService {
     private library: LibraryFacade,
     private snack: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {}
 
   toggleLikedSong(song: Song): Observable<Song> {
@@ -32,9 +32,9 @@ export class ComponentHelperService {
       .pipe(
         tap(() =>
           this.openSnack(
-            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        )
+            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes',
+          ),
+        ),
       );
   }
 
@@ -45,9 +45,9 @@ export class ComponentHelperService {
       .pipe(
         tap(() =>
           this.openSnack(
-            !!album.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        )
+            !!album.likedOn ? 'Added to your likes' : 'Removed from your likes',
+          ),
+        ),
       );
   }
 
@@ -55,14 +55,16 @@ export class ComponentHelperService {
     return this.library
       .toggleArtistFavorite(artist)
       .pipe(
-        tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
+        tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date())),
       )
       .pipe(
         tap(() =>
           this.openSnack(
-            !!artist.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        )
+            !!artist.likedOn
+              ? 'Added to your likes'
+              : 'Removed from your likes',
+          ),
+        ),
       );
   }
 
@@ -80,8 +82,8 @@ export class ComponentHelperService {
           result === undefined
             ? EMPTY
             : result === true
-              ? EMPTY // TODO Redirect to new playlist and add song
-              : this.library
+            ? EMPTY // TODO Redirect to new playlist and add song
+            : this.library
                 .addSongsToPlaylist([...songs].reverse(), result)
                 .pipe(
                   concatMap((key) =>
@@ -92,16 +94,16 @@ export class ComponentHelperService {
                           .open(`Added to ${result}`, 'VIEW', {
                             panelClass: shown ? 'snack-top' : 'snack',
                           })
-                          .onAction()
+                          .onAction(),
                       ),
                       tap(() =>
-                        this.router.navigate(['/', 'playlist', key.toString()])
-                      )
-                    )
-                  )
-                )
+                        this.router.navigate(['/', 'playlist', key.toString()]),
+                      ),
+                    ),
+                  ),
+                ),
         ),
-        map(() => void 0)
+        map(() => void 0),
       );
   }
 
@@ -114,7 +116,7 @@ export class ComponentHelperService {
         this.player.setPlaying();
         this.player.setPlaylist(songs);
         this.player.show();
-      })
+      }),
     );
   }
 
@@ -139,9 +141,9 @@ export class ComponentHelperService {
           newPlaylist.splice(playlist.indexOf(song), 1);
           this.player.setPlaylist(
             newPlaylist,
-            Math.min(index, newPlaylist.length - 1)
+            Math.min(index, newPlaylist.length - 1),
           );
-        })
+        }),
       )
       .subscribe();
   }
@@ -154,8 +156,8 @@ export class ComponentHelperService {
         tap((shown) =>
           this.snack.open(message, undefined, {
             panelClass: shown ? 'snack-top' : 'snack',
-          })
-        )
+          }),
+        ),
       )
       .subscribe();
   }

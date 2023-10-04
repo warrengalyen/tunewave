@@ -151,7 +151,7 @@ export class TopBarComponent {
   constructor(
     private router: Router,
     private scanner: ScannerFacade,
-    private storage: StorageService
+    private storage: StorageService,
   ) {}
 
   scan(): void {
@@ -168,7 +168,7 @@ export class TopBarComponent {
       .clear$()
       .pipe(
         tap(() => localStorage.clear()),
-        tap(() => this.router.navigate(['/welcome']))
+        tap(() => this.router.navigate(['/welcome'])),
       )
       .subscribe();
   }

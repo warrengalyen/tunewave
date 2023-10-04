@@ -10,10 +10,13 @@ import { PageAlbumData } from '@app/pages/page-album.component';
   providedIn: 'root',
 })
 export class PageAlbumResolverService implements Resolve<PageAlbumData> {
-  constructor(private library: LibraryFacade, private router: Router) {}
+  constructor(
+    private library: LibraryFacade,
+    private router: Router,
+  ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<PageAlbumData> | Observable<never> {
     const id = route.paramMap.get('id');
@@ -39,9 +42,9 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
             album,
             songs,
             cover,
-          }))
+          })),
         );
-      })
+      }),
     );
   }
 }

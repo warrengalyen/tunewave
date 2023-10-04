@@ -47,15 +47,14 @@ export class MediaSessionService {
         .pipe(
           tap(
             (cover) =>
-              ((navigator.mediaSession as MediaSession).metadata = new MediaMetadata(
-                {
+              ((navigator.mediaSession as MediaSession).metadata =
+                new MediaMetadata({
                   title: song.title,
                   artist: song.artist,
                   album: song.album,
                   artwork: cover ? [{ src: cover }] : [],
-                }
-              ))
-          )
+                })),
+          ),
         )
         .subscribe();
     }

@@ -94,7 +94,7 @@ export class PlaylistComponent implements OnInit {
     private library: LibraryFacade,
     private snack: MatSnackBar,
     private player: PlayerFacade,
-    @Optional() private cdr: ChangeDetectorRef
+    @Optional() private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -107,13 +107,15 @@ export class PlaylistComponent implements OnInit {
         !cover
           ? of(undefined)
           : from(import('node-vibrant')).pipe(
-            concatMap((vibrant) => vibrant.from(cover).getPalette()),
-            map((palette) => palette.Vibrant?.getRgb()),
+              concatMap((vibrant) => vibrant.from(cover).getPalette()),
+              map((palette) => palette.Vibrant?.getRgb()),
               map((rgb) =>
-                !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
-            )
-          )
-      )
+                !!rgb
+                  ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`
+                  : undefined,
+              ),
+            ),
+      ),
     );
   }
 
@@ -131,7 +133,7 @@ export class PlaylistComponent implements OnInit {
           this.player.setPlaying();
           this.player.setPlaylist(songs, 0);
           this.player.show();
-        })
+        }),
       )
       .subscribe();
   }
@@ -144,7 +146,7 @@ export class PlaylistComponent implements OnInit {
           () =>
             (this.playlist.likedOn = !!this.playlist.likedOn
               ? undefined
-              : new Date())
+              : new Date()),
         ),
         tap(() => this.updateMenu()),
         tap(() => this.update.next(this.playlist)),
@@ -152,9 +154,9 @@ export class PlaylistComponent implements OnInit {
           this.snack.open(
             !!this.playlist.likedOn
               ? 'Added to your likes'
-              : 'Removed from your likes'
-          )
-        )
+              : 'Removed from your likes',
+          ),
+        ),
       )
       // .pipe(tap(() => this.cdr.markForCheck()))
       .subscribe();

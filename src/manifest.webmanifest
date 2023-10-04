@@ -1,9 +1,9 @@
 {
   "name": "TuneWave",
   "short_name": "TuneWave",
-   "theme_color": "#000000",
-   "background_color": "#131313",
-   "display": "minimal-ui",
+  "theme_color": "#000000",
+  "background_color": "#131313",
+  "display": "minimal-ui",
   "scope": "./",
   "start_url": "/index.html",
   "icons": [

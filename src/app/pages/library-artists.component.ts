@@ -183,7 +183,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     private route: ActivatedRoute,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
-    private history: HistoryService
+    private history: HistoryService,
   ) {
     super();
   }
@@ -206,7 +206,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.likes = sort.likes))
+      tap((sort) => (this.likes = sort.likes)),
     );
 
     this.artists$ = sort$.pipe(
@@ -219,7 +219,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
           .getArtists(sort.index, null, sort.direction, predicate)
           .pipe(scanArray(), startWith([]));
       }),
-      shareReplay(1)
+      shareReplay(1),
     );
   }
 

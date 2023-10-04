@@ -96,13 +96,13 @@ import { MenuItem } from '@app/components/menu.component';
           <a
             *ngIf="song.artist"
             [routerLink]="['/artist', getHash(song.artist)]"
-          >{{ song.artist }}</a
+            >{{ song.artist }}</a
           >
           •
           <a
             *ngIf="song.album"
             [routerLink]="['/album', getHash(song.album)]"
-          >{{ song.album }}</a
+            >{{ song.album }}</a
           >
           • {{ song.year }}
         </span>
@@ -331,7 +331,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private library: LibraryFacade,
     private player: PlayerFacade,
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   @HostListener('mouseleave')
@@ -347,13 +347,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
     const r1$ = this.router.events
       .pipe(
         filter(
-          (event): event is ActivationStart => event instanceof ActivationStart
+          (event): event is ActivationStart => event instanceof ActivationStart,
         ),
         filter((event) => event.snapshot.outlet === 'primary'),
         tap(
-          (event) => (this.isPlayRoute = event.snapshot.url[0]?.path === 'play')
+          (event) =>
+            (this.isPlayRoute = event.snapshot.url[0]?.path === 'play'),
         ),
-        tap(() => this.cdr.markForCheck())
+        tap(() => this.cdr.markForCheck()),
       )
       .subscribe();
 
@@ -367,13 +368,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.value$ = merge(
       of(true),
       input$.pipe(mapTo(false)),
-      change$.pipe(mapTo(true))
+      change$.pipe(mapTo(true)),
     ).pipe(
       switchMap((doUpdate) =>
         doUpdate
           ? this.player.getTimeUpdate$()
-          : input$.pipe(map((e) => e.value || 0))
-      )
+          : input$.pipe(map((e) => e.value || 0)),
+      ),
     );
 
     this.max$ = this.player.getDuration$();

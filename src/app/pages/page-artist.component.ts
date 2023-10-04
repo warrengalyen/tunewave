@@ -193,7 +193,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private helper: ComponentHelperService,
-    private history: HistoryService
+    private history: HistoryService,
   ) {
     super();
   }

@@ -182,7 +182,7 @@ export class SongListItemComponent {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
   ) {}
 
   getHash(s: string): string {

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 export class ResizerService {
   resize(
     imageUrl: string,
-    sizes: { height: number; width: number }[]
+    sizes: { height: number; width: number }[],
   ): Observable<string[]> {
     return new Observable((observer) => {
       const canvas = document.createElement('canvas');
@@ -50,7 +50,7 @@ export class ResizerService {
   resizeSquare(imageUrl: string, sizes: number[]): Observable<string[]> {
     return this.resize(
       imageUrl,
-      sizes.map((size) => ({ width: size, height: size }))
+      sizes.map((size) => ({ width: size, height: size })),
     );
   }
 }

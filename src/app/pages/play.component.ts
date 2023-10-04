@@ -98,7 +98,7 @@ export class PlayComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private player: PlayerFacade
+    private player: PlayerFacade,
   ) {}
 
   @HostListener('click')
@@ -114,7 +114,7 @@ export class PlayComponent implements OnInit {
           if (playlist.length === 0) {
             this.router.navigate(['/', 'library']);
           }
-        })
+        }),
       )
       .subscribe();
   }
@@ -126,7 +126,7 @@ export class PlayComponent implements OnInit {
   drop(
     playlist: SongWithCover$[],
     currentSong: SongWithCover$,
-    event: CdkDragDrop<SongWithCover$[]>
+    event: CdkDragDrop<SongWithCover$[]>,
   ): void {
     const newPlaylist = [...playlist];
     moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);

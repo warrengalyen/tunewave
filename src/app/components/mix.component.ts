@@ -63,7 +63,7 @@ import { Icons } from '../utils/icons.util';
 export class MixComponent {
   @Input() name!: string;
   @Input() label!: string;
-  @Input() mixRouterLink !: any[] | string;
+  @Input() mixRouterLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
   icons = Icons;
   menuItems = [

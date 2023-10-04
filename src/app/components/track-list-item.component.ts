@@ -151,7 +151,7 @@ export class TrackListItemComponent {
   constructor(
     private player: PlayerFacade,
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
   ) {}
 
   getHash(s: string): string {

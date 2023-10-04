@@ -56,41 +56,41 @@ export interface PagePlaylistData {
                <app-icon [path]="icons.playlistEdit"></app-icon>
                <span>Edit playlist</span>
              </button>-->
-             <button
-               mat-raised-button
-               class="play-button"
-               color="accent"
-               *ngIf="songs.length > 0"
-               (click)="shufflePlay(songs)"
-             >
-               <app-icon [path]="icons.shuffle"></app-icon>
-               <span>Shuffle</span>
-             </button>
-             <button
-               mat-stroked-button
-               class="shuffle-button"
-               color="accent"
-               *ngIf="songs.length > 0"
-             >
-               <app-icon [path]="icons.heartOutline"></app-icon>
-               <span>Add to your likes</span>
-             </button>
-           </ng-container>
+              <button
+                mat-raised-button
+                class="play-button"
+                color="accent"
+                *ngIf="songs.length > 0"
+                (click)="shufflePlay(songs)"
+              >
+                <app-icon [path]="icons.shuffle"></app-icon>
+                <span>Shuffle</span>
+              </button>
+              <button
+                mat-stroked-button
+                class="shuffle-button"
+                color="accent"
+                *ngIf="songs.length > 0"
+              >
+                <app-icon [path]="icons.heartOutline"></app-icon>
+                <span>Add to your likes</span>
+              </button>
+            </ng-container>
             <!--<app-menu [disableRipple]="true"></app-menu>-->
-         </div>
-       </app-container-page>
-     </header>
-     <app-container-page>
-       <app-song-list
-         [songs]="songs"
-         *ngIf="songs$ | async as songs"
-       ></app-song-list>
-       <p class="empty" *ngIf="(songs$ | async)?.length === 0">
-         No songs in this playlist yet
-       </p>
-     </app-container-page>
-   </ng-container>
-`,
+          </div>
+        </app-container-page>
+      </header>
+      <app-container-page>
+        <app-song-list
+          [songs]="songs"
+          *ngIf="songs$ | async as songs"
+        ></app-song-list>
+        <p class="empty" *ngIf="(songs$ | async)?.length === 0">
+          No songs in this playlist yet
+        </p>
+      </app-container-page>
+    </ng-container>
+  `,
   styleUrls: ['../styles/page-header.component.scss'],
   styles: [
     `
@@ -125,26 +125,31 @@ export class PagePlaylistComponent implements OnInit {
 
   icons = Icons;
 
-  constructor(private route: ActivatedRoute, private player: PlayerFacade) {}
+  constructor(
+    private route: ActivatedRoute,
+    private player: PlayerFacade,
+  ) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
     this.songs$ = this.info$.pipe(
       switchMap(({ songs$ }) => songs$),
-      shareReplay(1)
+      shareReplay(1),
     );
     this.color$ = this.info$.pipe(
       switchMap(({ cover }) =>
         !cover
           ? of(undefined)
           : from(import('node-vibrant')).pipe(
-            concatMap((vibrant) => vibrant.from(cover).getPalette()),
-            map((palette) => palette.Vibrant?.getRgb()),
+              concatMap((vibrant) => vibrant.from(cover).getPalette()),
+              map((palette) => palette.Vibrant?.getRgb()),
               map((rgb) =>
-                !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
-            )
-          )
-      )
+                !!rgb
+                  ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`
+                  : undefined,
+              ),
+            ),
+      ),
     );
   }
 

@@ -92,7 +92,7 @@ export class AlbumComponent implements OnInit {
     private library: LibraryFacade,
     private player: PlayerFacade,
     private helper: ComponentHelperService,
-    private history: HistoryService
+    private history: HistoryService,
   ) {}
 
   ngOnInit(): void {
@@ -136,7 +136,7 @@ export class AlbumComponent implements OnInit {
                 this.player.setPlaylist(tracks);
                 this.player.shuffle();
                 this.player.show();
-              })
+              }),
             )
             .subscribe();
           this.history.albumPlayed(this.album);
@@ -152,7 +152,7 @@ export class AlbumComponent implements OnInit {
               tap((tracks) => {
                 this.player.addToPlaylist(tracks, true);
                 this.player.show();
-              })
+              }),
             )
             .subscribe();
         },
@@ -167,7 +167,7 @@ export class AlbumComponent implements OnInit {
               tap((tracks) => {
                 this.player.addToPlaylist(tracks);
                 this.player.show();
-              })
+              }),
             )
             .subscribe();
         },

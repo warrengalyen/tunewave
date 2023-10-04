@@ -131,7 +131,7 @@ export class ScanComponent {
 
   constructor(
     private scanner: ScannerFacade,
-    public dialogRef: MatDialogRef<ScanComponent>
+    public dialogRef: MatDialogRef<ScanComponent>,
   ) {
     const throttle = <T>() =>
       throttleTime<T>(25, asapScheduler, {
@@ -151,14 +151,6 @@ export class ScanComponent {
       throttle(),
       map(
         ([
-           state,
-           error,
-           step,
-           stepSub,
-           progress,
-           progressDisplay,
-           progressDisplaySub,
-         ]) => ({
           state,
           error,
           step,
@@ -166,8 +158,16 @@ export class ScanComponent {
           progress,
           progressDisplay,
           progressDisplaySub,
-        })
-      )
+        ]) => ({
+          state,
+          error,
+          step,
+          stepSub,
+          progress,
+          progressDisplay,
+          progressDisplaySub,
+        }),
+      ),
     );
   }
 

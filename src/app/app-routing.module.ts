@@ -160,23 +160,23 @@ export class AppRoutingModule {
                     concatMap(() =>
                       fromEvent(window, 'scroll').pipe(
                         debounceTime(100),
-                        first()
-                      )
+                        first(),
+                      ),
                     ),
                     concatMap(() =>
                       getPos$.pipe(
                         concatMap((pos) =>
                           pos[1] === p[1]
                             ? EMPTY
-                            : throwError('position not matching')
-                        )
-                      )
-                    )
+                            : throwError('position not matching'),
+                        ),
+                      ),
+                    ),
                   ),
-                  m$.pipe(concatMapTo(scroll$))
-                )
+                  m$.pipe(concatMapTo(scroll$)),
+                ),
               ),
-              retry(10)
+              retry(10),
             )
             .subscribe();
         } else if (e.anchor) {

@@ -9,38 +9,38 @@ export const selectCoreState = createFeatureSelector<ScannerState>('scanner');
 // );
 
 export const selectState = createSelector(
-    selectCoreState,
-    (state) => state.state
+  selectCoreState,
+  (state) => state.state,
 );
 
 export const selectError = createSelector(
-    selectCoreState,
-    (state) => state.error
+  selectCoreState,
+  (state) => state.error,
 );
 
 export const selectStep = createSelector(
-    selectCoreState,
-    (state) => state.step
+  selectCoreState,
+  (state) => state.step,
 );
 
 export const selectStepSub = createSelector(
-    selectCoreState,
-    (state) => state.stepSub
+  selectCoreState,
+  (state) => state.stepSub,
 );
 
 export const selectProgress = createSelector(
-    selectCoreState,
-    (state) => state.progress
+  selectCoreState,
+  (state) => state.progress,
 );
 
 export const selectProgressDisplay = createSelector(
-    selectCoreState,
-    (state) => state.progressDisplay
+  selectCoreState,
+  (state) => state.progressDisplay,
 );
 
 export const selectProgressDisplaySub = createSelector(
-    selectCoreState,
-    (state) => state.progressDisplaySub
+  selectCoreState,
+  (state) => state.progressDisplaySub,
 );
 
 // export const selectScannedCount = createSelector(

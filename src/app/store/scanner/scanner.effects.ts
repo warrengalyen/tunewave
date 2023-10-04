@@ -80,11 +80,11 @@ export class ScannerEffects implements OnRunEffects {
       this.actions$.pipe(
         ofType(openDirectoryFailure),
         concatMap(() =>
-          this.router.navigate(['/404'], { skipLocationChange: true })
+          this.router.navigate(['/404'], { skipLocationChange: true }),
         ),
-        concatMap(() => this.router.navigate(['/welcome']))
+        concatMap(() => this.router.navigate(['/welcome'])),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   step1$ = createEffect(() =>
@@ -106,35 +106,35 @@ export class ScannerEffects implements OnRunEffects {
         this.scannerRef = scanner;
 
         return scanner.afterOpened().pipe(map(() => scanEntries(dir)));
-      })
+      }),
       // tap(async () => {
       //   await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
       //     skipLocationChange: true,
       //   });
       // }),
       // map((dir) => scanEntries(dir))
-    )
+    ),
   );
   step2$ = createEffect(() =>
     this.actions$.pipe(
       ofType(scanEntriesSuccess),
       delay(100),
-      mapTo(extractEntries())
-    )
+      mapTo(extractEntries()),
+    ),
   );
   step3$ = createEffect(() =>
     this.actions$.pipe(
       ofType(extractEntriesSuccess),
       delay(100),
-      mapTo(buildAlbums())
-    )
+      mapTo(buildAlbums()),
+    ),
   );
   step4$ = createEffect(() =>
     this.actions$.pipe(
       ofType(buildAlbumsSuccess),
       delay(100),
-      mapTo(buildArtists())
-    )
+      mapTo(buildArtists()),
+    ),
   );
   step5$ = createEffect(() =>
     this.actions$.pipe(
@@ -142,8 +142,8 @@ export class ScannerEffects implements OnRunEffects {
       delay(100),
       tap(() => localStorage.setItem('scanned', '1')),
       tap(() => this.router.navigate(['/library'])),
-      mapTo(scanSuccess())
-    )
+      mapTo(scanSuccess()),
+    ),
   );
 
   onAbort$ = createEffect(
@@ -154,11 +154,11 @@ export class ScannerEffects implements OnRunEffects {
         tap(() => this.snackBar.open(`Scan aborted`, '', { duration: 2500 })),
         concatMap(() => this.storage.clear$()),
         concatMap(() =>
-          this.router.navigate(['/404'], { skipLocationChange: true })
+          this.router.navigate(['/404'], { skipLocationChange: true }),
         ),
-        concatMap(() => this.router.navigate(['/welcome']))
+        concatMap(() => this.router.navigate(['/welcome'])),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   openDirectory$ = createEffect(() =>
@@ -170,8 +170,8 @@ export class ScannerEffects implements OnRunEffects {
             .open()
             .pipe(map((directory) => openDirectorySuccess({ directory }))),
         error: (error) => openDirectoryFailure({ error }),
-      })
-    )
+      }),
+    ),
   );
 
   // error$ = createEffect(
@@ -198,23 +198,23 @@ export class ScannerEffects implements OnRunEffects {
             concatMap((entry: Entry) =>
               this.storage.add$('entries', entry).pipe(
                 concatMap(() =>
-                  isFile(entry) ? of(scanEntrySuccess({ entry })) : EMPTY
+                  isFile(entry) ? of(scanEntrySuccess({ entry })) : EMPTY,
                 ),
-                catchError((error) => of(scanEntryFailure({ error })))
-              )
+                catchError((error) => of(scanEntryFailure({ error }))),
+              ),
             ),
             takeUntil(
               this.actions$.pipe(
                 ofType(abortScan),
-                concatMapTo(throwError('aborted'))
-              )
-            )
+                concatMapTo(throwError('aborted')),
+              ),
+            ),
           ),
         error: (error) =>
           error === 'aborted' ? scanAborted() : scanEntriesFailure({ error }),
         complete: (count) => scanEntriesSuccess({ count }),
-      })
-    )
+      }),
+    ),
   );
 
   parseEntries$ = createEffect(() =>
@@ -235,30 +235,30 @@ export class ScannerEffects implements OnRunEffects {
                     this.scanner.saveSong(song, pictures).pipe(
                       mapTo(extractEntrySuccess({ song })),
                       // tapError((err) => console.error(err)),
-                      catchError((error) => of(extractEntryFailure({ error })))
-                    )
-                  )
+                      catchError((error) => of(extractEntryFailure({ error }))),
+                    ),
+                  ),
                 ),
                 m$.pipe(
                   collectLeft(),
-                  map((error) => extractEntryFailure({ error }))
-                )
-              )
+                  map((error) => extractEntryFailure({ error })),
+                ),
+              ),
             ),
             takeUntil(
               this.actions$.pipe(
                 ofType(abortScan),
-                concatMapTo(throwError('aborted'))
-              )
-            )
+                concatMapTo(throwError('aborted')),
+              ),
+            ),
           ),
         complete: (count) => extractEntriesSuccess({ count }),
         error: (error) =>
           error === 'aborted'
             ? scanAborted()
             : extractEntriesFailure({ error }),
-      })
-    )
+      }),
+    ),
   );
 
   buildAlbums$ = createEffect(() =>
@@ -270,7 +270,7 @@ export class ScannerEffects implements OnRunEffects {
             filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
             groupBy(
               ({ value: song }) => song.album,
-              ({ value: song }) => song
+              ({ value: song }) => song,
             ),
             mergeMap((groups$) =>
               groups$.pipe(
@@ -278,8 +278,8 @@ export class ScannerEffects implements OnRunEffects {
                 map((songs) => ({
                   album: groups$.key,
                   songs,
-                }))
-              )
+                })),
+              ),
             ),
             map(({ album, songs }) => {
               const artists = songs
@@ -289,7 +289,7 @@ export class ScannerEffects implements OnRunEffects {
 
               const lastModified = [...songs].sort(
                 (s1, s2) =>
-                  s2.lastModified.getTime() - s1.lastModified.getTime()
+                  s2.lastModified.getTime() - s1.lastModified.getTime(),
               )[0].lastModified;
 
               const albumArtist =
@@ -311,14 +311,14 @@ export class ScannerEffects implements OnRunEffects {
             concatMap((album) =>
               this.storage.add$('albums', album).pipe(
                 mapTo(buildAlbumSuccess({ album })),
-                catchError((error) => of(buildAlbumFailure({ error })))
-              )
-            )
+                catchError((error) => of(buildAlbumFailure({ error }))),
+              ),
+            ),
           ),
         complete: (count) => buildAlbumsSuccess({ count }),
         error: (error) => buildAlbumsFailure({ error }),
-      })
-    )
+      }),
+    ),
   );
 
   buildArtists$ = createEffect(() =>
@@ -330,7 +330,7 @@ export class ScannerEffects implements OnRunEffects {
             filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
             groupBy(
               ({ key }) => key,
-              ({ value: album }) => album
+              ({ value: album }) => album,
             ),
             mergeMap((groups$) =>
               groups$.pipe(
@@ -338,8 +338,8 @@ export class ScannerEffects implements OnRunEffects {
                 map((albums) => ({
                   artist: groups$.key,
                   albums,
-                }))
-              )
+                })),
+              ),
             ),
             map(({ artist, albums }) => {
               const latestAlbum: Album | undefined = albums
@@ -348,7 +348,7 @@ export class ScannerEffects implements OnRunEffects {
 
               const lastModified = [...albums].sort(
                 (a1, a2) =>
-                  a2.lastModified.getTime() - a1.lastModified.getTime()
+                  a2.lastModified.getTime() - a1.lastModified.getTime(),
               )[0].lastModified;
 
               return {
@@ -361,14 +361,14 @@ export class ScannerEffects implements OnRunEffects {
             concatMap((artist) =>
               this.storage.add$('artists', artist).pipe(
                 mapTo(buildArtistSuccess({ artist })),
-                catchError((error) => of(buildArtistFailure({ error })))
-              )
-            )
+                catchError((error) => of(buildArtistFailure({ error }))),
+              ),
+            ),
           ),
         complete: (count) => buildArtistsSuccess({ count }),
         error: (error) => buildArtistsFailure({ error }),
-      })
-    )
+      }),
+    ),
   );
 
   constructor(
@@ -380,15 +380,15 @@ export class ScannerEffects implements OnRunEffects {
     private router: Router,
     private snackBar: MatSnackBar,
     private scanner: ScannerFacade,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngrxOnRunEffects(
-    resolvedEffects$: Observable<EffectNotification>
+    resolvedEffects$: Observable<EffectNotification>,
   ): Observable<EffectNotification> {
     return this.appRef.isStable.pipe(
       first((isStable) => isStable),
-      concatMapTo(resolvedEffects$)
+      concatMapTo(resolvedEffects$),
     );
   }
 }

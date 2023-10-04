@@ -11,10 +11,13 @@ import { scanArray } from '@app/utils/scan-array.util';
   providedIn: 'root',
 })
 export class PageArtistResolverService implements Resolve<PageArtistData> {
-  constructor(private library: LibraryFacade, private router: Router) {}
+  constructor(
+    private library: LibraryFacade,
+    private router: Router,
+  ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<PageArtistData> | Observable<never> {
     const id = route.paramMap.get('id');
@@ -41,23 +44,23 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
             albums$: this.library.getArtistAlbums(artist).pipe(
               scanArray(),
               map((albums) =>
-                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
-              )
+                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0)),
+              ),
             ),
             foundOn$: this.library.getAlbumsWithArtist(artist).pipe(
               scanArray(),
               map((albums) =>
-                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
-              )
+                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0)),
+              ),
             ),
             songs$: this.library.getSongs('artists', artist.name).pipe(
               map(({ value }) => value),
               take(5),
-              scanArray()
+              scanArray(),
             ),
-          }))
+          })),
         );
-      })
+      }),
     );
   }
 }

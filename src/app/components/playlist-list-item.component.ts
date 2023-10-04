@@ -174,7 +174,7 @@ export class PlaylistListItemComponent {
 
   constructor(
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   getHash(s: string): string {

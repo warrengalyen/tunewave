@@ -28,7 +28,10 @@ export class ScannerFacade {
   progressDisplay$ = this.store.select(selectProgressDisplay);
   progressDisplaySub$ = this.store.select(selectProgressDisplaySub);
 
-  constructor(private store: Store, private storage: StorageService) {}
+  constructor(
+    private store: Store,
+    private storage: StorageService,
+  ) {}
 
   abort(): void {
     this.store.dispatch(abortScan());
@@ -58,7 +61,7 @@ export class ScannerFacade {
 
         if (!pictures || pictures.length === 0) {
           return this.searchForCover(makeSong()).pipe(
-            concatMap((coverKey) => saveSong(coverKey))
+            concatMap((coverKey) => saveSong(coverKey)),
           );
         }
 
@@ -70,12 +73,12 @@ export class ScannerFacade {
               key
                 ? saveSong(key)
                 : transaction
-                  .objectStore('pictures')
-                  .add$(pictures[0])
-                  .pipe(concatMap((pictKey) => saveSong(pictKey)))
-            )
+                    .objectStore('pictures')
+                    .add$(pictures[0])
+                    .pipe(concatMap((pictKey) => saveSong(pictKey))),
+            ),
           );
-      })
+      }),
     );
   }
 
@@ -96,13 +99,13 @@ export class ScannerFacade {
               t
                 .objectStore<Entry>('entries')
                 .index('parent')
-                .getAll$(parent as string)
+                .getAll$(parent as string),
             ),
             map((files) =>
               files.filter(
                 (file) =>
-                  file.name.endsWith('.jpg') || file.name.endsWith('.png')
-              )
+                  file.name.endsWith('.jpg') || file.name.endsWith('.png'),
+              ),
             ),
             concatMap((files) => {
               if (files.length === 0) {
@@ -117,12 +120,12 @@ export class ScannerFacade {
                     data: base64,
                     hash: hash(base64),
                     format: this.getFormat(bestFit as FileEntry),
-                  })
-                )
+                  }),
+                ),
               );
-            })
-          )
-      )
+            }),
+          ),
+      ),
     );
   }
 
@@ -133,7 +136,7 @@ export class ScannerFacade {
         (file) =>
           file.name.toLowerCase().includes('cover') ||
           file.name.toLowerCase().includes('front') ||
-          file.name.toLowerCase().includes('folder')
+          file.name.toLowerCase().includes('folder'),
       ) ||
       files[0]
     );
