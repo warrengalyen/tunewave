@@ -1519,6 +1519,13 @@
     dot "^2.0.0-beta.1"
     fs-extra "^11.1.1"
 
+"@warrengalyen/ngrx-idb@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@warrengalyen/ngrx-idb/-/ngrx-idb-0.1.0.tgz#3f04fe0224ded805db4f3682f150a6989c58b427"
+  integrity sha512-lTTohvuRKph0s4LXiqbyXe6XwraHPM3guHO8ZgvHb5WJfehAYB+uDCRtYRqjtK/LmRX9cFBrGnOL9zCXs8GIqQ==
+  dependencies:
+    tslib "^2.4.0"
+
 "@warrengalyen/ngx-idb@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@warrengalyen/ngx-idb/-/ngx-idb-0.1.0.tgz#c86846fec0c06634d7c6b8128ae6b5c2b405a005"
@@ -2090,6 +2097,11 @@
   integrity sha512-n8Vsz48/u14R8S7akLO7TWmqXGcvCYacCIS106hC3FVkOwAOflhcstGYu6oShbqOVuu0Vcw7s/amc2oAJV4YkQ==
   dependencies:
     tslib "^2.0.0"
+
+"@ngrx/schematics@^16.3.0":
+  version "16.3.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/schematics/-/schematics-16.3.0.tgz#baf030998c2bc86fbf1c4f43ea056f5aa56840a3"
+  integrity sha512-PBCzxBVW5YDr3BGF6Q94Qey4SLq3U2yWfRNZEW4aKHYrQr89BvyZcB9KeCsR4wHOIdvgit1eX0GXBx2ekmqtng==
 
 "@ngrx/store-devtools@^16.2.0":
   version "16.2.0"

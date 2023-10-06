@@ -80,5 +80,5 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   on(setVolume, (state, { volume }) => ({
     ...state,
     volume,
-  })),
+  }))
 );

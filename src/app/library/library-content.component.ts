@@ -60,8 +60,8 @@ import { ScrollerService } from '@app/main/scroller.service';
       .filters.scrolled-top {
         background-color: #212121;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: rgba(0, 0, 0, 0.4) 0 5px 6px -3px;
         margin-bottom: -1px;
+        box-shadow: rgba(0, 0, 0, 0.4) 0 5px 6px -3px;
       }
       .filters app-container {
         display: flex;
@@ -96,7 +96,7 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private scroller: ScrollerService,
+    private scroller: ScrollerService
   ) {}
 
   ngOnInit(): void {
@@ -108,14 +108,14 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
               (this.selectedSortOption =
                 this.sortOptions.find(
                   (o) =>
-                    o.value === `${params.get('sort')}_${params.get('dir')}`,
-                ) || this.sortOptions[0]),
+                    o.value === `${params.get('sort')}_${params.get('dir')}`
+                ) || this.sortOptions[0])
           ),
           tap(() => (this.sortValue = this.selectedSortOption.value)),
           tap((params) => (this.likes = params.get('likes') === '1')),
-          tap(() => this.cdr.markForCheck()),
+          tap(() => this.cdr.markForCheck())
         )
-        .subscribe(),
+        .subscribe()
     );
 
     setTimeout(() =>

@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import {
   concatMap,
   filter,
   map,
   mergeAll,
-  shareReplay,
   takeWhile,
   tap,
 } from 'rxjs/operators';
@@ -13,77 +12,21 @@ import {
   ReactiveIDBDatabase,
   ReactiveIDBTransaction,
 } from '@warrengalyen/reactive-idb';
+import { Database, IndexedDBService } from '@warrengalyen/ngx-idb';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class StorageService {
-  private db$!: Observable<ReactiveIDBDatabase>;
-
-  constructor() {
-    this.init();
+@Injectable()
+export class DatabaseService {
+  get db$(): Observable<ReactiveIDBDatabase> {
+    return this.databaseService.database;
   }
 
-  init(): void {
-    this.db$ = ReactiveIDBDatabase.create({
-      name: 'tunewave',
-      schema: [
-        {
-          version: 1,
-          stores: [
-            {
-              name: 'entries',
-              options: { keyPath: 'path' },
-              indexes: ['parent'],
-            },
-            {
-              name: 'songs',
-              options: { keyPath: 'entryPath' },
-              indexes: [
-                { name: 'artists', options: { multiEntry: true } },
-                { name: 'genre', options: { multiEntry: true } },
-                'album',
-                'title',
-                'likedOn',
-                'lastModified',
-              ],
-            },
-            {
-              name: 'pictures',
-              options: { keyPath: 'hash' },
-            },
-            {
-              name: 'albums',
-              options: { keyPath: 'name' },
-              indexes: [
-                { name: 'artists', options: { multiEntry: true } },
-                'hash',
-                'year',
-                'albumArtist',
-                'likedOn',
-                'listenedOn',
-                'lastModified',
-              ],
-            },
-            {
-              name: 'artists',
-              options: { keyPath: 'name' },
-              indexes: ['hash', 'likedOn', 'listenedOn', 'lastModified'],
-            },
-            {
-              name: 'playlists',
-              options: { keyPath: 'hash' },
-              indexes: ['title', 'createdOn', 'listenedOn'],
-            },
-          ],
-        },
-      ],
-    }).pipe(shareReplay(1));
-  }
+  constructor(
+    @Inject(Database('tunewave')) private databaseService: IndexedDBService
+  ) {}
 
   open$(
     stores: string[],
-    mode: IDBTransactionMode = 'readonly',
+    mode: IDBTransactionMode = 'readonly'
   ): Observable<ReactiveIDBTransaction> {
     return this.db$.pipe(concatMap((db) => db.transaction$(stores, mode)));
   }
@@ -91,7 +34,7 @@ export class StorageService {
   update$<T>(
     store: string,
     value: Partial<T>,
-    key: IDBValidKey,
+    key: IDBValidKey
   ): Observable<IDBValidKey> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
@@ -103,28 +46,28 @@ export class StorageService {
             concatMap((obj) =>
               obj
                 ? objStore.put$({ ...obj, ...value })
-                : throwError('Could not find key: ' + key),
-            ),
-          ),
-      ),
+                : throwError(() => 'Could not find key: ' + key)
+            )
+          )
+      )
     );
   }
 
   getAllValues$<T>(
     keys: IDBValidKey[],
     store: string,
-    index?: string,
+    index?: string
   ): Observable<T> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) => transaction.objectStore<T>(store)),
       concatMap((objStore) =>
         keys.map((key) =>
-          index ? objStore.index(index).get$(key) : objStore.get$(key),
-        ),
+          index ? objStore.index(index).get$(key) : objStore.get$(key)
+        )
       ),
       mergeAll(),
-      filter((v): v is T => !!v),
+      filter((v): v is T => !!v)
     );
   }
 
@@ -133,14 +76,14 @@ export class StorageService {
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection,
-    predicate?: (_: T) => boolean,
+    predicate?: (_: T) => boolean
   ): Observable<{ value: T; key: IDBValidKey; primaryKey: IDBValidKey }> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction: ReactiveIDBTransaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store),
+          : transaction.objectStore<T>(store)
       ),
       concatMap((o) => o.openCursor$(query, direction || 'next')),
       takeWhile((cursor): cursor is IDBCursorWithValue => !!cursor),
@@ -150,7 +93,7 @@ export class StorageService {
         value: cursor.value as T,
         key: cursor.key,
         primaryKey: cursor.primaryKey,
-      })),
+      }))
     );
   }
 
@@ -158,7 +101,7 @@ export class StorageService {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
-      concatMap((s) => s.add$(value, key)),
+      concatMap((s) => s.add$(value, key))
     );
   }
 
@@ -166,31 +109,39 @@ export class StorageService {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
-      concatMap((s) => s.put$(value, key)),
+      concatMap((s) => s.put$(value, key))
     );
   }
 
   get$<T>(
     store: string,
     key: IDBValidKey,
-    index?: string,
+    index?: string
   ): Observable<T | undefined> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store),
+          : transaction.objectStore<T>(store)
       ),
-      concatMap((s) => s.get$(key)),
+      concatMap((s) => s.get$(key))
+    );
+  }
+
+  getAll$<T>(store: string, index?: string): Observable<T[]> {
+    return this.db$.pipe(
+      concatMap((db) => db.transaction$(store)),
+      map((transaction) =>
+        index
+          ? transaction.objectStore<T>(store).index(index)
+          : transaction.objectStore<T>(store)
+      ),
+      concatMap((s) => s.getAll$(undefined, 200))
     );
   }
 
   clear$(): Observable<void> {
-    return this.db$.pipe(
-      tap((db) => db.close()),
-      concatMap((db) => db.clear$()),
-      tap(() => this.init()),
-    );
+    return this.databaseService.clear$();
   }
 }

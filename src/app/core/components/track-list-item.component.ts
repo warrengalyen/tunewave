@@ -6,7 +6,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Song, SongWithCover$ } from '@app/database/song.model';
+import { Song, SongWithCover$ } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -151,7 +151,7 @@ export class TrackListItemComponent {
   constructor(
     private player: PlayerFacade,
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService,
+    private helper: ComponentHelperService
   ) {}
 
   getHash(s: string): string {

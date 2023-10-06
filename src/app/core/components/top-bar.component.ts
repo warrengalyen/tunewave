@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
 import { Router } from '@angular/router';
-import { StorageService } from '@app/database/storage.service';
+import { DatabaseService } from '@app/database/database.service';
 import { tap } from 'rxjs/operators';
 
 @Component({
@@ -150,7 +150,7 @@ export class TopBarComponent {
   constructor(
     private router: Router,
     // private scanner: ScannerFacade,
-    private storage: StorageService,
+    private storage: DatabaseService
   ) {}
 
   // scan(): void {
@@ -167,7 +167,7 @@ export class TopBarComponent {
       .clear$()
       .pipe(
         tap(() => localStorage.clear()),
-        tap(() => this.router.navigate(['/welcome'])),
+        tap(() => this.router.navigate(['/welcome']))
       )
       .subscribe();
   }

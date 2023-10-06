@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { defer, merge, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { tapError } from '@app/core/utils/tap-error.util';
-import { DirectoryEntry, Entry } from '@app/database/entry.model';
+import { DirectoryEntry, Entry } from '@app/database/entries/entry.model';
 
 @Injectable()
 export class FileService {
@@ -19,7 +19,7 @@ export class FileService {
   open(): Observable<DirectoryEntry> {
     return defer(() => showDirectoryPicker()).pipe(
       tapError((err) => console.log(err)),
-      map((handle) => this.entryFromHandle(handle) as DirectoryEntry),
+      map((handle) => this.entryFromHandle(handle) as DirectoryEntry)
       // If user has aborted then complete
       // catchError(e => e.code === 20 ? EMPTY : throwError(e))
     );
@@ -36,14 +36,14 @@ export class FileService {
       this.getHandles(directory).pipe(
         map((handle) => this.entryFromHandle(handle, directory.path)),
         concatMap((entry: Entry) =>
-          entry.kind === 'directory' ? this.walk(entry) : of(entry),
-        ),
-      ),
+          entry.kind === 'directory' ? this.walk(entry) : of(entry)
+        )
+      )
     );
   }
 
   private getHandles = (
-    directory: DirectoryEntry,
+    directory: DirectoryEntry
   ): Observable<FileSystemHandle> =>
     new Observable(
       (observer) =>
@@ -59,12 +59,12 @@ export class FileService {
           } catch (e) {
             observer.error(e);
           }
-        })(),
+        })()
     );
 
   private entryFromHandle = (
     handle: FileSystemHandle,
-    parent?: string,
+    parent?: string
   ): Entry => ({
     kind: handle.kind,
     name: handle.name,

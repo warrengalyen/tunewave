@@ -120,7 +120,7 @@ export class PlaylistNewComponent {
     title: new FormControl('', {
       validators: [Validators.required],
       asyncValidators: (
-        control: AbstractControl,
+        control: AbstractControl
       ): Observable<ValidationErrors | null> =>
         this.library
           .getPlaylist(control.value)
@@ -133,7 +133,7 @@ export class PlaylistNewComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private library: LibraryFacade,
+    private library: LibraryFacade
   ) {}
 
   async createPlaylist(): Promise<void> {
