@@ -1,5 +1,4 @@
 import { ICommonTagsResult } from 'music-metadata/lib/type';
-import { Observable } from 'rxjs';
 
 export type Song = Omit<ICommonTagsResult, 'picture'> & {
   albumHash: string;
@@ -10,6 +9,3 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
   likedOn?: Date;
 };
 
-export type SongWithCover$ = Omit<Song, 'pictureKey'> & {
-  cover$: Observable<string | undefined>;
-};

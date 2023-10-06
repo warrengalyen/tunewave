@@ -6,7 +6,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -19,34 +19,34 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
     <span class="index">
       <span>{{ trackNumber }}</span>
       <app-player-button
-        class="player-button"
-        size="small"
-        [song]="song"
-        [playlist]="playlist"
+          class="player-button"
+          size="small"
+          [song]="song"
+          [playlist]="playlist"
       ></app-player-button>
     </span>
     <span class="title">{{ song.title }}</span>
     <span class="controls">
       <button
-        [class.liked]="!!song.likedOn"
-        mat-icon-button
-        [disableRipple]="true"
-        (click)="toggleLiked(song)"
+          [class.liked]="!!song.likedOn"
+          mat-icon-button
+          [disableRipple]="true"
+          (click)="toggleLiked(song)"
       >
         <app-icon
-          [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
         ></app-icon>
       </button>
       <button
-        class="trigger"
-        aria-label="Other actions"
-        title="Other actions"
-        mat-icon-button
-        [disableRipple]="true"
-        #trigger="matMenuTrigger"
-        [matMenuTriggerFor]="menu"
-        [matMenuTriggerData]="{ song: song }"
-        (click)="menuOpened.emit(trigger); $event.stopPropagation()"
+          class="trigger"
+          aria-label="Other actions"
+          title="Other actions"
+          mat-icon-button
+          [disableRipple]="true"
+          #trigger="matMenuTrigger"
+          [matMenuTriggerFor]="menu"
+          [matMenuTriggerData]="{ song: song }"
+          (click)="menuOpened.emit(trigger); $event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
@@ -139,8 +139,8 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrackListItemComponent {
-  @Input() song!: SongWithCover$;
-  @Input() playlist!: SongWithCover$[];
+  @Input() song!: Song;
+  @Input() playlist!: Song[];
 
   @Input() trackNumber!: number;
 
@@ -149,24 +149,24 @@ export class TrackListItemComponent {
   icons = Icons;
 
   constructor(
-    private player: PlayerFacade,
-    private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+      private player: PlayerFacade,
+      private cdr: ChangeDetectorRef,
+      private helper: ComponentHelperService
   ) {}
 
   getHash(s: string): string {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$): void {
+  toggleLiked(song: Song): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
-  playNext(song: SongWithCover$): void {
+  playNext(song: Song): void {
     this.helper.playNext(song);
   }
 
-  addToQueue(song: SongWithCover$): void {
+  addToQueue(song: Song): void {
     this.helper.addToQueue(song);
   }
 

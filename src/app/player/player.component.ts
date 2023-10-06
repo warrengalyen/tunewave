@@ -20,7 +20,7 @@ import {
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { merge, Observable, of, Subscription } from 'rxjs';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
@@ -31,54 +31,54 @@ import { MenuItem } from '@app/core/components/menu.component';
   template: `
     <a (click)="toggleMenu()" class="back-link"></a>
     <mat-slider
-      class="main back"
-      color="primary"
-      [step]="1"
-      [min]="0"
-      [max]="max$ | async"
-      [value]="value$ | async"
-      [tabIndex]="-1"
+        class="main back"
+        color="primary"
+        [step]="1"
+        [min]="0"
+        [max]="max$ | async"
+        [value]="value$ | async"
+        [tabIndex]="-1"
     ></mat-slider>
     <mat-slider
-      class="main front"
-      color="primary"
-      [step]="1"
-      [min]="0"
-      [max]="max$ | async"
-      [value]="value$ | async"
-      [disabled]="seekerDisabled$ | async"
-      (change)="seek($event)"
-      cdkMonitorSubtreeFocus
-      #seeker
+        class="main front"
+        color="primary"
+        [step]="1"
+        [min]="0"
+        [max]="max$ | async"
+        [value]="value$ | async"
+        [disabled]="seekerDisabled$ | async"
+        (change)="seek($event)"
+        cdkMonitorSubtreeFocus
+        #seeker
     ></mat-slider>
     <div class="left">
       <button
-        mat-icon-button
-        [disableRipple]="true"
-        color="accent"
-        (click)="playPreviousSong()"
-        [disabled]="(prevEnabled$ | async) === false"
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (click)="playPreviousSong()"
+          [disabled]="(prevEnabled$ | async) === false"
       >
         <app-icon [path]="icons.skipPrevious"></app-icon>
       </button>
       <button
-        mat-icon-button
-        [disableRipple]="true"
-        color="accent"
-        *ngIf="playing$ | async as playing"
-        (click)="playing.value ? pause() : resume()"
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          *ngIf="playing$ | async as playing"
+          (click)="playing.value ? pause() : resume()"
       >
         <app-icon
-          [path]="playing.value ? icons.pause : icons.play"
-          [size]="40"
+            [path]="playing.value ? icons.pause : icons.play"
+            [size]="40"
         ></app-icon>
       </button>
       <button
-        mat-icon-button
-        [disableRipple]="true"
-        color="accent"
-        (click)="playNextSong()"
-        [disabled]="(nextEnabled$ | async) === false"
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (click)="playNextSong()"
+          [disabled]="(nextEnabled$ | async) === false"
       >
         <app-icon [path]="icons.skipNext"></app-icon>
       </button>
@@ -88,20 +88,24 @@ import { MenuItem } from '@app/core/components/menu.component';
     </div>
     <div class="center" *ngIf="currentSong$ | async as song">
       <div class="cover" style="--aspect-ratio:1">
-        <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
+        <img
+            *ngIf="currentSongCover$ | async as cover"
+            [src]="cover"
+            alt="cover"
+        />
       </div>
       <div class="meta">
         <span class="top">{{ song.title }}</span>
         <span class="sub">
           <a
-            *ngIf="song.artist"
-            [routerLink]="['/artist', getHash(song.artist)]"
+              *ngIf="song.artist"
+              [routerLink]="['/artist', getHash(song.artist)]"
           >{{ song.artist }}</a
           >
           •
           <a
-            *ngIf="song.album"
-            [routerLink]="['/album', getHash(song.album)]"
+              *ngIf="song.album"
+              [routerLink]="['/album', getHash(song.album)]"
           >{{ song.album }}</a
           >
           • {{ song.year }}
@@ -109,13 +113,13 @@ import { MenuItem } from '@app/core/components/menu.component';
       </div>
       <div class="controls">
         <button
-          mat-icon-button
-          [disableRipple]="true"
-          color="accent"
-          (click)="toggleLiked(song)"
+            mat-icon-button
+            [disableRipple]="true"
+            color="accent"
+            (click)="toggleLiked(song)"
         >
           <app-icon
-            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+              [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
           ></app-icon>
         </button>
         <app-menu [hasBackdrop]="true" [menuItems]="menuItems"></app-menu>
@@ -124,52 +128,52 @@ import { MenuItem } from '@app/core/components/menu.component';
     <div class="right">
       <div class="volume">
         <button
-          mat-icon-button
-          [disableRipple]="true"
-          color="accent"
-          (mouseenter)="showVolume()"
-          (click)="toggleMute()"
+            mat-icon-button
+            [disableRipple]="true"
+            color="accent"
+            (mouseenter)="showVolume()"
+            (click)="toggleMute()"
         >
           <app-icon
-            [path]="icons.volumeHigh"
-            *ngIf="(muted$ | async) === false"
+              [path]="icons.volumeHigh"
+              *ngIf="(muted$ | async) === false"
           ></app-icon>
           <app-icon
-            [path]="icons.volumeOff"
-            *ngIf="(muted$ | async) === true"
+              [path]="icons.volumeOff"
+              *ngIf="(muted$ | async) === true"
           ></app-icon>
         </button>
         <mat-slider
-          [class.hidden]="!isVolumeShown"
-          [min]="0"
-          [max]="1"
-          [step]="0.01"
-          (input)="setVolume($event.value === null ? 1 : $event.value)"
-          [value]="volume$ | async"
+            [class.hidden]="!isVolumeShown"
+            [min]="0"
+            [max]="1"
+            [step]="0.01"
+            (input)="setVolume($event.value === null ? 1 : $event.value)"
+            [value]="volume$ | async"
         ></mat-slider>
       </div>
       <button mat-icon-button [disableRipple]="true" color="accent">
         <app-icon [path]="icons.repeat"></app-icon>
       </button>
       <button
-        mat-icon-button
-        [disableRipple]="true"
-        color="accent"
-        (click)="shuffle()"
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (click)="shuffle()"
       >
         <app-icon [path]="icons.shuffle"></app-icon>
       </button>
       <button
-        mat-icon-button
-        [disableRipple]="true"
-        color="accent"
-        class="menu"
-        (click)="toggleMenu()"
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          class="menu"
+          (click)="toggleMenu()"
       >
         <app-icon
-          [path]="icons.menuUp"
-          [size]="36"
-          [class.up]="isPlayRoute"
+            [path]="icons.menuUp"
+            [size]="36"
+            [class.up]="isPlayRoute"
         ></app-icon>
       </button>
     </div>
@@ -313,7 +317,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
   value$!: Observable<number>;
   max$!: Observable<number>;
   seekerDisabled$!: Observable<boolean>;
-  currentSong$!: Observable<SongWithCover$>;
+  currentSong$!: Observable<Song>;
+  currentSongCover$!: Observable<string | undefined>;
   menuItems!: MenuItem[];
   playing$!: Observable<{ value: boolean }>;
   nextEnabled$!: Observable<boolean>;
@@ -327,12 +332,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
   subscription = new Subscription();
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private library: LibraryFacade,
-    private player: PlayerFacade,
-    private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+      private route: ActivatedRoute,
+      private router: Router,
+      private library: LibraryFacade,
+      private player: PlayerFacade,
+      private helper: ComponentHelperService,
+      private cdr: ChangeDetectorRef
   ) {}
 
   @HostListener('mouseleave')
@@ -346,39 +351,39 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const r1$ = this.router.events
-      .pipe(
-        filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
-        ),
-        // filter((event) => event.snapshot.outlet === 'primary'),
-        // tap(
-        //   (event) => (this.isPlayRoute = event.snapshot.url[0]?.path === 'play')
-        // ),
-        tap(
-          (event) =>
-            (this.isPlayRoute = event.urlAfterRedirects.startsWith('/play'))
-        ),
-        tap(() => this.cdr.markForCheck())
-      )
-      .subscribe();
+        .pipe(
+            filter(
+                (event): event is NavigationEnd => event instanceof NavigationEnd
+            ),
+            // filter((event) => event.snapshot.outlet === 'primary'),
+            // tap(
+            //   (event) => (this.isPlayRoute = event.snapshot.url[0]?.path === 'play')
+            // ),
+            tap(
+                (event) =>
+                    (this.isPlayRoute = event.urlAfterRedirects.startsWith('/play'))
+            ),
+            tap(() => this.cdr.markForCheck())
+        )
+        .subscribe();
 
     this.subscription.add(r1$);
 
     this.isPlayRoute =
-      this.route.snapshot.parent?.firstChild?.url[0]?.path === 'play';
+        this.route.snapshot.parent?.firstChild?.url[0]?.path === 'play';
 
     const input$ = this.seeker.input.asObservable().pipe(shareReplay(1));
     const change$ = this.seeker.change.asObservable();
     this.value$ = merge(
-      of(true),
-      input$.pipe(mapTo(false)),
-      change$.pipe(mapTo(true))
+        of(true),
+        input$.pipe(mapTo(false)),
+        change$.pipe(mapTo(true))
     ).pipe(
-      switchMap((doUpdate) =>
-        doUpdate
-          ? this.player.getTimeUpdate$()
-          : input$.pipe(map((e) => e.value || 0))
-      )
+        switchMap((doUpdate) =>
+            doUpdate
+                ? this.player.getTimeUpdate$()
+                : input$.pipe(map((e) => e.value || 0))
+        )
     );
 
     this.max$ = this.player.getDuration$();
@@ -389,14 +394,18 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.volume$ = this.player.getVolume$();
 
     this.seekerDisabled$ = this.player
-      .getDuration$()
-      .pipe(map((duration) => duration === 0));
+        .getDuration$()
+        .pipe(map((duration) => duration === 0));
 
     this.currentSong$ = this.player
-      .getCurrentSong$()
-      .pipe(filter((song): song is SongWithCover$ => !!song));
+        .getCurrentSong$()
+        .pipe(filter((song): song is Song => !!song));
 
     this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
+
+    this.currentSongCover$ = this.currentSong$.pipe(
+        switchMap((song) => this.library.getCover(song.pictureKey))
+    );
   }
 
   ngOnDestroy(): void {
@@ -444,14 +453,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$): void {
+  toggleLiked(song: Song): void {
     this.helper.toggleLikedSong(song).subscribe(() => {
       this.updateMenu(song);
       this.cdr.markForCheck();
     });
   }
 
-  updateMenu(song: SongWithCover$): void {
+  updateMenu(song: Song): void {
     this.menuItems = [
       {
         text: 'Play next',
@@ -467,10 +476,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
         text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
         icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
         click: () =>
-          this.helper.toggleLikedSong(song).subscribe(() => {
-            this.updateMenu(song);
-            this.cdr.markForCheck();
-          }),
+            this.helper.toggleLikedSong(song).subscribe(() => {
+              this.updateMenu(song);
+              this.cdr.markForCheck();
+            }),
       },
       {
         text: 'Add to playlist',
@@ -486,15 +495,15 @@ export class PlayerComponent implements OnInit, OnDestroy {
         text: 'Go to album',
         icon: this.icons.album,
         routerLink: song.album
-          ? ['/album', this.getHash(song.album)]
-          : undefined,
+            ? ['/album', this.getHash(song.album)]
+            : undefined,
       },
       {
         text: 'Go to artist',
         icon: this.icons.accountMusic,
         routerLink: song.artist
-          ? ['/artist', this.getHash(song.artist)]
-          : undefined,
+            ? ['/artist', this.getHash(song.artist)]
+            : undefined,
       },
     ];
   }

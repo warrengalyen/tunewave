@@ -7,15 +7,15 @@ import {
 import { HistoryService } from '@app/core/services/history.service';
 import { merge, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { AlbumWithCover$ } from '@app/database/albums/album.model';
-import { ArtistWithCover$ } from '@app/database/artists/artist.model';
+import { Album } from '@app/database/albums/album.model';
+import { Artist } from '@app/database/artists/artist.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 import { SetRequired } from '@app/core/utils/types.util';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 
 export type HistoryItem =
-  | (SetRequired<ArtistWithCover$, 'listenedOn'> & { t: 'artist' })
-  | (SetRequired<AlbumWithCover$, 'listenedOn'> & { t: 'album' });
+    | (SetRequired<Artist, 'listenedOn'> & { t: 'artist' })
+    | (SetRequired<Album, 'listenedOn'> & { t: 'album' });
 
 @Component({
   selector: 'app-recent-activity',
@@ -26,16 +26,14 @@ export type HistoryItem =
         <app-h-list buttonsTopPosition="80px">
           <div class="item" appHListItem *ngFor="let item of a">
             <app-album
-              *ngIf="item.t === 'album'"
-              [album]="item"
-              size="small"
-              (menuOpened)="menuOpened($event)"
+                *ngIf="item.t === 'album'"
+                [album]="item"
+                size="small"
+                (menuOpened)="menuOpened($event)"
             ></app-album>
             <app-artist
-              *ngIf="item.t === 'artist'"
-              [name]="item.name"
-              [cover]="item.cover$ | async"
-              [artistRouterLink]="['/', 'artist', item.hash]"
+                *ngIf="item.t === 'artist'"
+                [artist]="item"
             ></app-artist>
           </div>
         </app-h-list>
@@ -49,7 +47,7 @@ export type HistoryItem =
       }
       .container {
         margin-top: 32px;
-        /*margin-bottom: 80px;*/
+        /* margin-bottom: 80px; */
         min-height: 291px;
       }
       app-title {
@@ -68,6 +66,7 @@ export type HistoryItem =
 })
 export class RecentActivityComponent extends WithTrigger implements OnInit {
   a$!: Observable<HistoryItem[]>;
+  cover$!: Observable<string | undefined>;
 
   constructor(private history: HistoryService) {
     super();
@@ -81,20 +80,20 @@ export class RecentActivityComponent extends WithTrigger implements OnInit {
 
   ngOnInit(): void {
     this.a$ = merge(
-      this.history.latestPlayedAlbums$().pipe(
-        take(20),
-        map((m) => ({ ...m, t: 'album' } as HistoryItem))
-      ),
-      this.history.latestPlayedArtists$().pipe(
-        take(20),
-        map((m) => ({ ...m, t: 'artist' } as HistoryItem))
-      )
+        this.history.latestPlayedAlbums$().pipe(
+            take(20),
+            map((m) => ({ ...m, t: 'album' } as HistoryItem))
+        ),
+        this.history.latestPlayedArtists$().pipe(
+            take(20),
+            map((m) => ({ ...m, t: 'artist' } as HistoryItem))
+        )
     ).pipe(
-      scanArray(),
-      map((r) =>
-        r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime())
-      ),
-      map((r) => r.slice(0, 20))
+        scanArray(),
+        map((r) =>
+            r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime())
+        ),
+        map((r) => r.slice(0, 20))
     );
   }
 }
