@@ -67,77 +67,77 @@ export class LibraryFacade {
   private playlistsSubject: Subject<Playlist> = new Subject<Playlist>();
 
   constructor(
-      private storage: DatabaseService,
-      private pictures: PictureFacade,
-      private albums: AlbumFacade,
-      private artists: ArtistFacade
+    private storage: DatabaseService,
+    private pictures: PictureFacade,
+    private albums: AlbumFacade,
+    private artists: ArtistFacade,
   ) {}
 
   getAlbums(
-      index?: string,
-      query?: IDBValidKey | IDBKeyRange | null,
-      direction?: IDBCursorDirection,
-      predicate?: (_: Album) => boolean
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+    predicate?: (_: Album) => boolean,
   ): Observable<Album> {
     return this.storage
-        .walk$<Album>('albums', index, query, direction || 'next', predicate)
-        .pipe(map(({ value }) => value));
+      .walk$<Album>('albums', index, query, direction || 'next', predicate)
+      .pipe(map(({ value }) => value));
   }
 
   getArtists(
-      index?: string,
-      query?: IDBValidKey | IDBKeyRange | null,
-      direction?: IDBCursorDirection,
-      predicate?: (_: Artist) => boolean
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+    predicate?: (_: Artist) => boolean,
   ): Observable<Artist> {
     return this.storage
-        .walk$<Artist>('artists', index, query, direction || 'next', predicate)
-        .pipe(map(({ value }) => value));
+      .walk$<Artist>('artists', index, query, direction || 'next', predicate)
+      .pipe(map(({ value }) => value));
   }
 
   getSong(entryPath: string): Observable<Song> {
     return this.storage
-        .get$('songs', entryPath)
-        .pipe(filter((s): s is Song => !!s));
+      .get$('songs', entryPath)
+      .pipe(filter((s): s is Song => !!s));
   }
 
   getSongs(
-      index?: string,
-      query?: IDBValidKey | IDBKeyRange | null,
-      direction?: IDBCursorDirection,
-      predicate?: (song: Song) => boolean
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+    predicate?: (song: Song) => boolean,
   ): Observable<{
     value: Song;
     key: IDBValidKey;
     primaryKey: IDBValidKey;
   }> {
     return this.storage
-        .walk$<Song>('songs', index, query, direction || 'next', predicate)
-        .pipe(
-            map(({ value: song, key, primaryKey }) => ({
-              value: {
-                ...song,
-                cover$: this.getCover(song.pictureKey),
-              },
-              key,
-              primaryKey,
-            }))
-        );
+      .walk$<Song>('songs', index, query, direction || 'next', predicate)
+      .pipe(
+        map(({ value: song, key, primaryKey }) => ({
+          value: {
+            ...song,
+            cover$: this.getCover(song.pictureKey),
+          },
+          key,
+          primaryKey,
+        })),
+      );
   }
 
   getPlaylistSongs(playlist: Playlist): Observable<Song> {
     return this.storage
-        .getAllValues$<Song>([...playlist.songs].reverse(), 'songs')
-        .pipe(
-            map((song) => ({
-              ...song,
-              cover$: this.getCover(song.pictureKey),
-            }))
-        );
+      .getAllValues$<Song>([...playlist.songs].reverse(), 'songs')
+      .pipe(
+        map((song) => ({
+          ...song,
+          cover$: this.getCover(song.pictureKey),
+        })),
+      );
   }
 
   getEntry = (path: string): Observable<Entry | undefined> =>
-      this.storage.get$('entries', path);
+    this.storage.get$('entries', path);
 
   // getRootEntry(): Observable<Entry | undefined> {
   //   return this.storage
@@ -161,109 +161,111 @@ export class LibraryFacade {
   //   );
 
   getArtist = (name: string): Observable<Artist | undefined> =>
-      this.storage.get$('artists', name);
+    this.storage.get$('artists', name);
 
   getArtistByHash = (h: string): Observable<Artist | undefined> =>
-      this.storage.get$('artists', h);
+    this.storage.get$('artists', h);
 
   getAlbum = (title: string): Observable<Album | undefined> =>
-      this.storage.get$('albums', title);
+    this.storage.get$('albums', title);
 
   getAlbumByHash = (h: string): Observable<Album | undefined> =>
-      this.storage.get$('albums', h);
+    this.storage.get$('albums', h);
 
-  getPicture = (id: IDBValidKey | undefined): Observable<Picture | undefined> =>
-      id
-          ? this.pictures
-              .getByHash(id as string)
-              .pipe
-              //filter((p) => !!p)
-              // first(),
-              // concatMap((p) =>
-              //   p
-              //     ? concat(of(p), this.pictures.getByHash(id as string))
-              //     : concat(
-              //         this.storage.get$<Picture>('pictures', id),
-              //         this.pictures
-              //           .getByHash(id as string)
-              //           .pipe(filter((p2) => !!p2))
-              //       )
-              // )
-              ()
-          : // race<[Picture | undefined, Picture | undefined]>(
-            //     this.pictures.getByHash(id as string).pipe(filter((p) => !!p)),
-            //     this.storage.get$<Picture>('pictures', id)
-            //   ).pipe(first())
-          of(undefined);
+  getPicture = (
+    id: IDBValidKey | undefined,
+  ): Observable<Picture | undefined> =>
+    id
+      ? this.pictures
+          .getByHash(id as string)
+          .pipe
+          //filter((p) => !!p)
+          // first(),
+          // concatMap((p) =>
+          //   p
+          //     ? concat(of(p), this.pictures.getByHash(id as string))
+          //     : concat(
+          //         this.storage.get$<Picture>('pictures', id),
+          //         this.pictures
+          //           .getByHash(id as string)
+          //           .pipe(filter((p2) => !!p2))
+          //       )
+          // )
+          ()
+      : // race<[Picture | undefined, Picture | undefined]>(
+        //     this.pictures.getByHash(id as string).pipe(filter((p) => !!p)),
+        //     this.storage.get$<Picture>('pictures', id)
+        //   ).pipe(first())
+        of(undefined);
 
   getCover(
-      pictureKey: IDBValidKey | undefined
+    pictureKey: IDBValidKey | undefined,
   ): Observable<string | undefined> {
     return this.getPicture(pictureKey).pipe(
-        map((picture) => (picture ? getCover(picture) : undefined))
+      map((picture) => (picture ? getCover(picture) : undefined)),
     );
   }
 
   getAlbumTitles = (album: Album): Observable<Song> =>
-      this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
+    this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
 
   getAlbumTracks = (album: Album): Observable<Song[]> =>
-      this.getAlbumTitles(album).pipe(
-          toArray(),
-          map((songs) =>
-              songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
-          )
-      );
+    this.getAlbumTitles(album).pipe(
+      toArray(),
+      map((songs) =>
+        songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0)),
+      ),
+    );
 
   getArtistAlbums(artist: Artist): Observable<Album> {
     return this.storage.walk$<Album>('albums', 'albumArtist', artist.name).pipe(
-        map(({ value }) => value),
-        map((album) => ({
-          ...album,
-          cover$: this.getCover(album.pictureKey),
-        }))
+      map(({ value }) => value),
+      map((album) => ({
+        ...album,
+        cover$: this.getCover(album.pictureKey),
+      })),
     );
   }
 
   getAlbumsWithArtist(artist: Artist): Observable<Album> {
     return this.storage
-        .walk$<Album>(
-            'albums',
-            'artists',
-            artist.name,
-            'next',
-            (album) => album.albumArtist !== artist.name
-        )
-        .pipe(
-            map(({ value }) => value),
-            map((album) => ({
-              ...album,
-              cover$: this.getCover(album.pictureKey),
-            }))
-        );
+      .walk$<Album>(
+        'albums',
+        'artists',
+        artist.name,
+        'next',
+        (album) => album.albumArtist !== artist.name,
+      )
+      .pipe(
+        map(({ value }) => value),
+        map((album) => ({
+          ...album,
+          cover$: this.getCover(album.pictureKey),
+        })),
+      );
   }
 
   getArtistTitles(artist: Artist): Observable<Song> {
     return this.getSongs('artists', artist.name).pipe(
-        map(({ value }) => value)
+      map(({ value }) => value),
     );
   }
 
   requestPermission(handle: FileSystemHandle): Observable<void> {
     return from(requestPermissionPromise(handle)).pipe(
-        concatMap((perm) =>
-            perm ? of(void 0) : throwError(() => 'Permission denied')
-        )
+      concatMap((perm) =>
+        perm ? of(void 0) : throwError(() => 'Permission denied'),
+      ),
     );
   }
 
   toggleSongFavorite(song: Song): Observable<Song> {
     const update = { likedOn: !!song.likedOn ? undefined : new Date() };
     return this.storage.update$<Song>('songs', update, song.entryPath).pipe(
-        map(() => ({
-          ...song,
-          ...update,
-        }))
+      map(() => ({
+        ...song,
+        ...update,
+      })),
     );
   }
 
@@ -296,14 +298,14 @@ export class LibraryFacade {
   }
 
   getPlaylists(
-      index?: string,
-      query?: IDBValidKey | IDBKeyRange | null,
-      direction?: IDBCursorDirection,
-      predicate?: (playlist: Playlist) => boolean
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+    predicate?: (playlist: Playlist) => boolean,
   ): Observable<Playlist> {
     return this.storage
-        .walk$<Playlist>('playlists', index, query, direction, predicate)
-        .pipe(map(({ value }) => value));
+      .walk$<Playlist>('playlists', index, query, direction, predicate)
+      .pipe(map(({ value }) => value));
   }
 
   getNewlyCreatedPlaylists(): Observable<Playlist> {
@@ -311,7 +313,7 @@ export class LibraryFacade {
   }
 
   createPlaylist(
-      partial: Pick<Playlist, 'title' | 'description'>
+    partial: Pick<Playlist, 'title' | 'description'>,
   ): Observable<IDBValidKey> {
     const playlist: Playlist = {
       songs: [],
@@ -320,8 +322,8 @@ export class LibraryFacade {
       ...partial,
     };
     return this.storage
-        .add$('playlists', playlist)
-        .pipe(tap(() => this.playlistsSubject.next(playlist)));
+      .add$('playlists', playlist)
+      .pipe(tap(() => this.playlistsSubject.next(playlist)));
   }
 
   // createTempPlaylist(songs: Song[]): Observable<IDBValidKey> {
@@ -335,29 +337,29 @@ export class LibraryFacade {
 
   togglePlaylistFavorite(playlist: Playlist): Observable<void> {
     return this.storage
-        .update$<Playlist>(
-            'playlists',
-            { likedOn: !!playlist.likedOn ? undefined : new Date() },
-            playlist.hash
-        )
-        .pipe(map(() => void 0));
+      .update$<Playlist>(
+        'playlists',
+        { likedOn: !!playlist.likedOn ? undefined : new Date() },
+        playlist.hash,
+      )
+      .pipe(map(() => void 0));
   }
 
   addSongsToPlaylist(songs: Song[], title: string): Observable<IDBValidKey> {
     return this.storage.get$('playlists', title, 'title').pipe(
-        filter((playlist): playlist is Playlist => !!playlist),
-        concatMap((playlist) =>
-            this.storage.update$(
-                'playlists',
-                {
-                  songs: [...playlist.songs, ...songs.map((song) => song.entryPath)],
-                  pictureKey:
-                      playlist.pictureKey ||
-                      songs.find((song) => song.pictureKey)?.pictureKey,
-                },
-                playlist.hash
-            )
-        )
+      filter((playlist): playlist is Playlist => !!playlist),
+      concatMap((playlist) =>
+        this.storage.update$(
+          'playlists',
+          {
+            songs: [...playlist.songs, ...songs.map((song) => song.entryPath)],
+            pictureKey:
+              playlist.pictureKey ||
+              songs.find((song) => song.pictureKey)?.pictureKey,
+          },
+          playlist.hash,
+        ),
+      ),
     );
   }
 

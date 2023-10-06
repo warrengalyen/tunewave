@@ -36,70 +36,70 @@ import { loadEntries } from '@app/database/entries/entry.actions';
 // };
 
 export const playerAnimation: AnimationTriggerMetadata = trigger(
-    'playerAnimations',
-    [
-      transition(':enter', [
-        style({
-          transform: 'translateY(72px)',
-        }),
-        animate('300ms ease-out', style({ transform: 'translateY(0)' })),
-      ]),
-      transition(':leave', [
-        style({
-          transform: 'translateY(0)',
-        }),
-        animate('300ms ease-out', style({ transform: 'translateY(72px)' })),
-      ]),
-    ]
+  'playerAnimations',
+  [
+    transition(':enter', [
+      style({
+        transform: 'translateY(72px)',
+      }),
+      animate('300ms ease-out', style({ transform: 'translateY(0)' })),
+    ]),
+    transition(':leave', [
+      style({
+        transform: 'translateY(0)',
+      }),
+      animate('300ms ease-out', style({ transform: 'translateY(72px)' })),
+    ]),
+  ],
 );
 
 export const slideInAnimation: AnimationTriggerMetadata = trigger(
-    'routeAnimations',
-    [
-      // transition(debugAnimation('main'), []),
-      transition('void <=> *', []),
-      transition('null <=> *', []),
-      transition('* => PlayPage', [
-        style({ position: 'relative' }),
-        query(':enter', [
-          style({
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            height: 'calc(100% - 136px)',
-            width: '100vw',
-            zIndex: 200,
-            transform: 'translateY(100vh)',
-          }),
-        ]),
-        query(':enter', [
-          animate('300ms ease-out', style({ transform: 'translateY(64px)' })),
-        ]),
-        query('router-outlet ~ *', [style({}), animate(1, style({}))], {
-          optional: true,
+  'routeAnimations',
+  [
+    // transition(debugAnimation('main'), []),
+    transition('void <=> *', []),
+    transition('null <=> *', []),
+    transition('* => PlayPage', [
+      style({ position: 'relative' }),
+      query(':enter', [
+        style({
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: 'calc(100% - 136px)',
+          width: '100vw',
+          zIndex: 200,
+          transform: 'translateY(100vh)',
         }),
       ]),
-      transition('PlayPage => *', [
-        style({ position: 'relative' }),
-        query(':leave', [
-          style({
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            height: 'calc(100% - 136px)',
-            width: '100vw',
-            zIndex: 200,
-            transform: 'translateY(64px)',
-          }),
-        ]),
-        query(':leave', [
-          animate('300ms ease-out', style({ transform: 'translateY(100vh)' })),
-        ]),
-        query('router-outlet ~ *', [style({}), animate(1, style({}))], {
-          optional: true,
+      query(':enter', [
+        animate('300ms ease-out', style({ transform: 'translateY(64px)' })),
+      ]),
+      query('router-outlet ~ *', [style({}), animate(1, style({}))], {
+        optional: true,
+      }),
+    ]),
+    transition('PlayPage => *', [
+      style({ position: 'relative' }),
+      query(':leave', [
+        style({
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: 'calc(100% - 136px)',
+          width: '100vw',
+          zIndex: 200,
+          transform: 'translateY(64px)',
         }),
       ]),
-    ]
+      query(':leave', [
+        animate('300ms ease-out', style({ transform: 'translateY(100vh)' })),
+      ]),
+      query('router-outlet ~ *', [style({}), animate(1, style({}))], {
+        optional: true,
+      }),
+    ]),
+  ],
 );
 
 @Component({
@@ -153,10 +153,10 @@ export class MainComponent implements OnInit {
   showPlayer$: Observable<boolean> = this.player.isShown$();
 
   constructor(
-      private scroller: ScrollerService,
-      private player: PlayerFacade,
-      private albums: AlbumFacade,
-      private store: Store
+    private scroller: ScrollerService,
+    private player: PlayerFacade,
+    private albums: AlbumFacade,
+    private store: Store,
   ) {}
 
   @HostListener('window:scroll', ['$event'])
@@ -179,10 +179,10 @@ export class MainComponent implements OnInit {
 
   prepareRoute(outlet: RouterOutlet): string {
     const v =
-        (outlet &&
-            outlet.activatedRouteData &&
-            outlet.activatedRouteData.animation) ||
-        'null';
+      (outlet &&
+        outlet.activatedRouteData &&
+        outlet.activatedRouteData.animation) ||
+      'null';
     if (v === 'PlayPage') {
       setTimeout(() => (this.withBackground = true));
     } else {

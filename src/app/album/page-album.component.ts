@@ -53,7 +53,7 @@ export type PageAlbumData = {
                     'artist',
                     getHash(info.album.albumArtist)
                   ]"
-                >{{ info.album.albumArtist }}</a
+                  >{{ info.album.albumArtist }}</a
                 >
                 <span
                   *ngIf="
@@ -144,7 +144,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     private dialog: MatDialog,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
-    private history: HistoryService
+    private history: HistoryService,
   ) {
     super();
   }
@@ -162,7 +162,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
     this.menuItems$ = this.info$.pipe(
-      map((info) => this.getMenuItem(info.album, info.songs))
+      map((info) => this.getMenuItem(info.album, info.songs)),
     );
   }
 

@@ -145,7 +145,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
 
   constructor(
     private scroller: ScrollerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -155,9 +155,9 @@ export class LibraryComponent implements OnInit, OnDestroy {
         tap(
           () =>
             (this.scrolledTop =
-              this.navContainer.nativeElement.getBoundingClientRect().y <= 63)
+              this.navContainer.nativeElement.getBoundingClientRect().y <= 63),
         ),
-        tap(() => this.cdr.markForCheck())
+        tap(() => this.cdr.markForCheck()),
       )
       .subscribe();
 

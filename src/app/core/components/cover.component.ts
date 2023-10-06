@@ -76,8 +76,10 @@ import { Song } from '@app/database/songs/song.model';
         right: 16px;
         bottom: 16px;
         z-index: 1;
-        transition: transform 0.2s ease, opacity 0.2s ease,
-        background-color 0.2s ease;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease,
+          background-color 0.2s ease;
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.75);
       }

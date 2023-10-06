@@ -57,20 +57,20 @@ export interface PagePlaylistData {
                 <span>Edit playlist</span>
               </button>-->
               <button
-                  mat-raised-button
-                  class="play-button"
-                  color="accent"
-                  *ngIf="songs.length > 0"
-                  (click)="shufflePlay(songs)"
+                mat-raised-button
+                class="play-button"
+                color="accent"
+                *ngIf="songs.length > 0"
+                (click)="shufflePlay(songs)"
               >
                 <app-icon [path]="icons.shuffle"></app-icon>
                 <span>Shuffle</span>
               </button>
               <button
-                  mat-stroked-button
-                  class="shuffle-button"
-                  color="accent"
-                  *ngIf="songs.length > 0"
+                mat-stroked-button
+                class="shuffle-button"
+                color="accent"
+                *ngIf="songs.length > 0"
               >
                 <app-icon [path]="icons.heartOutline"></app-icon>
                 <span>Add to your likes</span>
@@ -82,8 +82,8 @@ export interface PagePlaylistData {
       </header>
       <app-container-page>
         <app-song-list
-            [songs]="songs"
-            *ngIf="songs$ | async as songs"
+          [songs]="songs"
+          *ngIf="songs$ | async as songs"
         ></app-song-list>
         <p class="empty" *ngIf="(songs$ | async)?.length === 0">
           No songs in this playlist yet
@@ -125,26 +125,31 @@ export class PagePlaylistComponent implements OnInit {
 
   icons = Icons;
 
-  constructor(private route: ActivatedRoute, private player: PlayerFacade) {}
+  constructor(
+    private route: ActivatedRoute,
+    private player: PlayerFacade,
+  ) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
     this.songs$ = this.info$.pipe(
-        switchMap(({ songs$ }) => songs$),
-        shareReplay(1)
+      switchMap(({ songs$ }) => songs$),
+      shareReplay(1),
     );
     this.color$ = this.info$.pipe(
-        switchMap(({ cover }) =>
-            !cover
-                ? of(undefined)
-                : from(import('node-vibrant')).pipe(
-                    concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
-                    map((palette) => palette.Vibrant?.getRgb()),
-                    map((rgb) =>
-                        !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
-                    )
-                )
-        )
+      switchMap(({ cover }) =>
+        !cover
+          ? of(undefined)
+          : from(import('node-vibrant')).pipe(
+              concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
+              map((palette) => palette.Vibrant?.getRgb()),
+              map((rgb) =>
+                !!rgb
+                  ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`
+                  : undefined,
+              ),
+            ),
+      ),
     );
   }
 

@@ -193,9 +193,9 @@ export class SongListItemComponent implements OnInit {
   icons = Icons;
 
   constructor(
-      private cdr: ChangeDetectorRef,
-      private helper: ComponentHelperService,
-      private library: LibraryFacade
+    private cdr: ChangeDetectorRef,
+    private helper: ComponentHelperService,
+    private library: LibraryFacade,
   ) {}
 
   ngOnInit(): void {

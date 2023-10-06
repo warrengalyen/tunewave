@@ -5,10 +5,10 @@ export const loadPictures = createAction('[Picture] Load Pictures');
 
 export const loadPicturesSuccess = createAction(
   '[Picture] Load Pictures Success',
-  props<{ data: Picture[] }>()
+  props<{ data: Picture[] }>(),
 );
 
 export const loadPicturesFailure = createAction(
   '[Picture] Load Pictures Failure',
-  props<{ error: any }>()
+  props<{ error: any }>(),
 );

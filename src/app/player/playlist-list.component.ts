@@ -11,14 +11,14 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   selector: 'app-playlist-list',
   template: `
     <app-playlist-list-item
-        class="item"
-        cdkDrag
-        cdkMonitorSubtreeFocus
-        *ngFor="let song of playlist; trackBy: trackBy; let i = index"
-        [song]="song"
-        [playlist]="playlist"
-        (menuOpened)="menuOpened($event)"
-        [class.selected]="
+      class="item"
+      cdkDrag
+      cdkMonitorSubtreeFocus
+      *ngFor="let song of playlist; trackBy: trackBy; let i = index"
+      [song]="song"
+      [playlist]="playlist"
+      (menuOpened)="menuOpened($event)"
+      [class.selected]="
         song.entryPath === currentSong?.entryPath && currentIndex === i
       "
     ></app-playlist-list-item>

@@ -19,34 +19,34 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
     <span class="index">
       <span>{{ trackNumber }}</span>
       <app-player-button
-          class="player-button"
-          size="small"
-          [song]="song"
-          [playlist]="playlist"
+        class="player-button"
+        size="small"
+        [song]="song"
+        [playlist]="playlist"
       ></app-player-button>
     </span>
     <span class="title">{{ song.title }}</span>
     <span class="controls">
       <button
-          [class.liked]="!!song.likedOn"
-          mat-icon-button
-          [disableRipple]="true"
-          (click)="toggleLiked(song)"
+        [class.liked]="!!song.likedOn"
+        mat-icon-button
+        [disableRipple]="true"
+        (click)="toggleLiked(song)"
       >
         <app-icon
-            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+          [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
         ></app-icon>
       </button>
       <button
-          class="trigger"
-          aria-label="Other actions"
-          title="Other actions"
-          mat-icon-button
-          [disableRipple]="true"
-          #trigger="matMenuTrigger"
-          [matMenuTriggerFor]="menu"
-          [matMenuTriggerData]="{ song: song }"
-          (click)="menuOpened.emit(trigger); $event.stopPropagation()"
+        class="trigger"
+        aria-label="Other actions"
+        title="Other actions"
+        mat-icon-button
+        [disableRipple]="true"
+        #trigger="matMenuTrigger"
+        [matMenuTriggerFor]="menu"
+        [matMenuTriggerData]="{ song: song }"
+        (click)="menuOpened.emit(trigger); $event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
@@ -149,9 +149,9 @@ export class TrackListItemComponent {
   icons = Icons;
 
   constructor(
-      private player: PlayerFacade,
-      private cdr: ChangeDetectorRef,
-      private helper: ComponentHelperService
+    private player: PlayerFacade,
+    private cdr: ChangeDetectorRef,
+    private helper: ComponentHelperService,
   ) {}
 
   getHash(s: string): string {

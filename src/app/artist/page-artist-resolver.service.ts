@@ -9,10 +9,13 @@ import { scanArray } from '@app/core/utils/scan-array.util';
 
 @Injectable()
 export class PageArtistResolverService implements Resolve<PageArtistData> {
-  constructor(private library: LibraryFacade, private router: Router) {}
+  constructor(
+    private library: LibraryFacade,
+    private router: Router,
+  ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<PageArtistData> | Observable<never> {
     const id = route.paramMap.get('id');
@@ -24,7 +27,7 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
 
     return this.library.getArtistByHash(id).pipe(
       concatMap((artist) =>
-        !artist ? throwError(() => 'not found') : of(artist)
+        !artist ? throwError(() => 'not found') : of(artist),
       ),
       catchError(() => {
         this.router.navigate(['/library']);
@@ -33,7 +36,7 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
       concatMap((artist) => {
         const cover$ = this.library.getPicture(artist.pictureKey).pipe(
           first(),
-          map((picture) => (picture ? getCover(picture) : undefined))
+          map((picture) => (picture ? getCover(picture) : undefined)),
         );
         return cover$.pipe(
           map((cover) => ({
@@ -42,23 +45,23 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
             albums$: this.library.getArtistAlbums(artist).pipe(
               scanArray(),
               map((albums) =>
-                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
-              )
+                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0)),
+              ),
             ),
             foundOn$: this.library.getAlbumsWithArtist(artist).pipe(
               scanArray(),
               map((albums) =>
-                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
-              )
+                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0)),
+              ),
             ),
             songs$: this.library.getSongs('artists', artist.name).pipe(
               map(({ value }) => value),
               take(5),
-              scanArray()
+              scanArray(),
             ),
-          }))
+          })),
         );
-      })
+      }),
     );
   }
 }

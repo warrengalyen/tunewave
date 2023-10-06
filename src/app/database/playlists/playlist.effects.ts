@@ -22,11 +22,14 @@ export class PlaylistEffects {
           // filter((arr) => arr.length > 0),
           toArray(),
           map((data) => loadPlaylistsSuccess({ data })),
-          catchError((error) => of(loadPlaylistsFailure({ error })))
-        )
-      )
-    )
+          catchError((error) => of(loadPlaylistsFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
-  constructor(private actions$: Actions, private database: DatabaseService) {}
+  constructor(
+    private actions$: Actions,
+    private database: DatabaseService,
+  ) {}
 }

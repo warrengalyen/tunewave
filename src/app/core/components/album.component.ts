@@ -96,7 +96,7 @@ export class AlbumComponent implements OnInit {
     private player: PlayerFacade,
     private helper: ComponentHelperService,
     private history: HistoryService,
-    private pictures: PictureFacade
+    private pictures: PictureFacade,
   ) {}
 
   ngOnInit(): void {
@@ -110,9 +110,9 @@ export class AlbumComponent implements OnInit {
 
     this.cover$ = this.pictures.getByHash(this.album.pictureKey as string).pipe(
       concatMap((p) =>
-        p ? of(p) : this.library.getPicture(this.album.pictureKey)
+        p ? of(p) : this.library.getPicture(this.album.pictureKey),
       ),
-      map((p) => (p ? getCover(p) : undefined))
+      map((p) => (p ? getCover(p) : undefined)),
     );
   }
 
@@ -147,7 +147,7 @@ export class AlbumComponent implements OnInit {
                 this.player.setPlaylist(tracks);
                 this.player.shuffle();
                 this.player.show();
-              })
+              }),
             )
             .subscribe();
           this.history.albumPlayed(this.album);
@@ -163,7 +163,7 @@ export class AlbumComponent implements OnInit {
               tap((tracks) => {
                 this.player.addToPlaylist(tracks, true);
                 this.player.show();
-              })
+              }),
             )
             .subscribe();
         },
@@ -178,7 +178,7 @@ export class AlbumComponent implements OnInit {
               tap((tracks) => {
                 this.player.addToPlaylist(tracks);
                 this.player.show();
-              })
+              }),
             )
             .subscribe();
         },

@@ -11,10 +11,13 @@ import { scanArray } from '@app/core/utils/scan-array.util';
   providedIn: 'root',
 })
 export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
-  constructor(private library: LibraryFacade, private router: Router) {}
+  constructor(
+    private library: LibraryFacade,
+    private router: Router,
+  ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<PagePlaylistData> {
     const id = route.paramMap.get('id');
@@ -26,7 +29,7 @@ export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
 
     return this.library.getPlaylistByHash(id).pipe(
       concatMap((playlist) =>
-          !playlist ? throwError(() => 'not found') : of(playlist)
+        !playlist ? throwError(() => 'not found') : of(playlist),
       ),
       catchError(() => {
         this.router.navigate(['/library']);
@@ -46,9 +49,9 @@ export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
             playlist,
             cover,
             songs$,
-          }))
+          })),
         );
-      })
+      }),
     );
   }
 }

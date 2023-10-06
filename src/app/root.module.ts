@@ -37,17 +37,17 @@ const routes: Routes = [
       // onSameUrlNavigation: 'reload',
     }),
     StoreModule.forRoot(
-        {},
-        {
-          runtimeChecks: {
-            strictStateSerializability: false,
-            strictActionSerializability: false,
-            strictStateImmutability: false,
-            strictActionImmutability: false,
-            strictActionWithinNgZone: false,
-            strictActionTypeUniqueness: false,
-          },
-        }
+      {},
+      {
+        runtimeChecks: {
+          strictStateSerializability: false,
+          strictActionSerializability: false,
+          strictStateImmutability: false,
+          strictActionImmutability: false,
+          strictActionWithinNgZone: false,
+          strictActionTypeUniqueness: false,
+        },
+      },
     ),
     EffectsModule.forRoot([]),
     // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),

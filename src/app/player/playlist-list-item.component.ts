@@ -178,9 +178,9 @@ export class PlaylistListItemComponent implements OnInit {
   icons = Icons;
 
   constructor(
-      private helper: ComponentHelperService,
-      private cdr: ChangeDetectorRef,
-      private library: LibraryFacade
+    private helper: ComponentHelperService,
+    private cdr: ChangeDetectorRef,
+    private library: LibraryFacade,
   ) {}
 
   ngOnInit(): void {

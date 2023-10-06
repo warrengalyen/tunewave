@@ -17,4 +17,3 @@ export const Album = {
   getHash: (albumArtist?: string, albumName?: string): string =>
     hash(`${albumArtist}|${albumName}}`),
 };
-

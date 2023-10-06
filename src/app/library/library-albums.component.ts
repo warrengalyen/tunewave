@@ -87,7 +87,7 @@ export class LibraryAlbumsComponent
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private albums: AlbumFacade
+    private albums: AlbumFacade,
   ) {
     super();
   }
@@ -124,7 +124,7 @@ export class LibraryAlbumsComponent
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.likes = sort.likes))
+      tap((sort) => (this.likes = sort.likes)),
     );
 
     this.albums$ = sort$.pipe(
@@ -143,14 +143,14 @@ export class LibraryAlbumsComponent
             }
             return i === 0 && j === 0
               ? of(...albs).pipe(
-                mergeMap((album, index) => of(album).pipe(delay(10 * index))),
-                bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
-                scan((acc, curr) => [...acc, ...curr])
-              )
+                  mergeMap((album, index) => of(album).pipe(delay(10 * index))),
+                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+                  scan((acc, curr) => [...acc, ...curr]),
+                )
               : of(albs);
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   }
 

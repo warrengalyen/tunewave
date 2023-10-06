@@ -55,7 +55,7 @@ export class AudioService {
           //   showPeaks: false,
           //   start: false,
           // });
-        })
+        }),
       )
       .subscribe();
   }
@@ -70,7 +70,7 @@ export class AudioService {
       tap(() => {
         this.objectUrl = URL.createObjectURL(file);
         this.audio.src = this.objectUrl;
-      })
+      }),
     );
   }
 
@@ -106,10 +106,10 @@ export class AudioService {
         // const gain = new AudioWorkletNode(context, 'test-processor');
         const audio = document.createElement('audio');
         audio.addEventListener('timeupdate', () =>
-          this.timeUpdate$.next(audio.currentTime)
+          this.timeUpdate$.next(audio.currentTime),
         );
         audio.addEventListener('durationchange', () =>
-          this.duration$.next(audio.duration)
+          this.duration$.next(audio.duration),
         );
         audio.addEventListener('pause', () => this.playing$.next(false));
         audio.addEventListener('play', () => this.playing$.next(true));
@@ -117,12 +117,12 @@ export class AudioService {
         audio.addEventListener('loadstart', () => this.loading$.next(true));
         audio.addEventListener('canplay', () => this.loading$.next(false));
         audio.addEventListener('volumechange', (event) =>
-          this.volume$.next((event.target as HTMLMediaElement)?.volume)
+          this.volume$.next((event.target as HTMLMediaElement)?.volume),
         );
         const source = context.createMediaElementSource(audio);
         return of({ context, source /*, gain*/, audio });
         //})
-      })
+      }),
     );
   }
 }

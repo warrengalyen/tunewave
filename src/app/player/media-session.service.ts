@@ -6,7 +6,10 @@ import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class MediaSessionService {
-  constructor(private player: PlayerFacade, private library: LibraryFacade) {}
+  constructor(
+    private player: PlayerFacade,
+    private library: LibraryFacade,
+  ) {}
 
   init(): void {
     if ('mediaSession' in navigator) {
@@ -43,20 +46,20 @@ export class MediaSessionService {
   setMetadata(song: Song): void {
     if ('mediaSession' in navigator) {
       this.library
-          .getCover(song.pictureKey)
-          .pipe(
-              tap(
-                  (cover) =>
-                      ((navigator.mediaSession as MediaSession).metadata =
-                          new MediaMetadata({
-                            title: song.title,
-                            artist: song.artist,
-                            album: song.album,
-                            artwork: cover ? [{ src: cover }] : [],
-                          }))
-              )
-          )
-          .subscribe();
+        .getCover(song.pictureKey)
+        .pipe(
+          tap(
+            (cover) =>
+              ((navigator.mediaSession as MediaSession).metadata =
+                new MediaMetadata({
+                  title: song.title,
+                  artist: song.artist,
+                  album: song.album,
+                  artwork: cover ? [{ src: cover }] : [],
+                })),
+          ),
+        )
+        .subscribe();
     }
   }
 }

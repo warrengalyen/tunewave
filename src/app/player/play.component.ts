@@ -99,10 +99,10 @@ export class PlayComponent implements OnInit {
   icons = Icons;
 
   constructor(
-      private route: ActivatedRoute,
-      private router: Router,
-      private player: PlayerFacade,
-      private library: LibraryFacade
+    private route: ActivatedRoute,
+    private router: Router,
+    private player: PlayerFacade,
+    private library: LibraryFacade,
   ) {}
 
   @HostListener('click')
@@ -112,18 +112,18 @@ export class PlayComponent implements OnInit {
 
   ngOnInit(): void {
     this.playlist$
-        .pipe(
-            take(1),
-            tap((playlist) => {
-              if (playlist.length === 0) {
-                this.router.navigate(['/', 'library']);
-              }
-            })
-        )
-        .subscribe();
+      .pipe(
+        take(1),
+        tap((playlist) => {
+          if (playlist.length === 0) {
+            this.router.navigate(['/', 'library']);
+          }
+        }),
+      )
+      .subscribe();
 
     this.currentCover$ = this.currentSong$.pipe(
-        concatMap((song) => this.library.getCover(song?.pictureKey))
+      concatMap((song) => this.library.getCover(song?.pictureKey)),
     );
   }
 

@@ -9,7 +9,7 @@ import { LibraryFacade } from '@app/library/store/library.facade';
 export class HistoryService {
   constructor(
     private storage: DatabaseService,
-    private library: LibraryFacade
+    private library: LibraryFacade,
   ) {}
 
   latestPlayedAlbums$(): Observable<Album> {

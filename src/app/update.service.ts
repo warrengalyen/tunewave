@@ -11,7 +11,7 @@ export class UpdateService {
     private appRef: ApplicationRef,
     private updates: SwUpdate,
     private snackBar: MatSnackBar,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
   ) {}
 
   register(): void {
@@ -22,11 +22,11 @@ export class UpdateService {
             .open('A new version is available.', 'Reload', {
               duration: Infinity,
             })
-            .afterDismissed()
+            .afterDismissed(),
         ),
         tap(() =>
-          this.updates.activateUpdate().then(() => document.location.reload())
-        )
+          this.updates.activateUpdate().then(() => document.location.reload()),
+        ),
       )
       .subscribe();
 
@@ -34,7 +34,7 @@ export class UpdateService {
       .pipe(
         first((isStable) => isStable),
         concatMap(() => interval(60 * 60 * 1000)), // 1 hour
-        tap(() => this.updates.checkForUpdate())
+        tap(() => this.updates.checkForUpdate()),
       )
       .subscribe();
   }

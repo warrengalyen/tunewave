@@ -118,7 +118,7 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
     private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -130,7 +130,7 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.likes = sort.likes))
+      tap((sort) => (this.likes = sort.likes)),
     );
 
     this.playlists$ = sort$.pipe(
@@ -142,7 +142,7 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
         return this.library
           .getPlaylists(sort.index, null, sort.direction, predicate)
           .pipe(scanArray(), startWith([]));
-      })
+      }),
     );
 
     this.newPlaylists$ = sort$.pipe(
@@ -150,9 +150,9 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
         this.library.getNewlyCreatedPlaylists().pipe(
           scanArray(),
           startWith([]),
-          map((pl) => pl.reverse())
-        )
-      )
+          map((pl) => pl.reverse()),
+        ),
+      ),
     );
   }
 

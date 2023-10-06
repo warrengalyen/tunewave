@@ -72,7 +72,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
       progressDisplay:
         Math.floor((extractedCount / state.scannedCount) * 100) + '%',
       progressDisplaySub: `${format(extractedCount)}/${format(
-        state.scannedCount
+        state.scannedCount,
       )}`,
       extractedCount,
       songsCount: state.songsCount + 1,
@@ -87,7 +87,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
       progressDisplay:
         Math.floor((extractedCount / state.scannedCount) * 100) + '%',
       progressDisplaySub: `${format(extractedCount)}/${format(
-        state.scannedCount
+        state.scannedCount,
       )}`,
       extractedCount,
     };
@@ -98,7 +98,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     progress: 100,
     progressDisplay: '100%',
     progressDisplaySub: `${format(state.extractedCount)}/${format(
-      state.scannedCount
+      state.scannedCount,
     )}`,
   })),
   on(Actions.extractEntriesFailure, (state, { error }) => ({
@@ -196,5 +196,5 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
       `${format(state.songsCount)} ${state.songsCount > 1 ? 'songs' : 'song'}`,
     progressDisplay: undefined,
     progressDisplaySub: undefined,
-  }))
+  })),
 );

@@ -22,11 +22,14 @@ export class AlbumEffects {
           // filter((arr) => arr.length > 0),
           toArray(),
           map((data) => loadAlbumsSuccess({ data })),
-          catchError((error) => of(loadAlbumsFailure({ error })))
-        )
-      )
-    )
+          catchError((error) => of(loadAlbumsFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
-  constructor(private actions$: Actions, private database: DatabaseService) {}
+  constructor(
+    private actions$: Actions,
+    private database: DatabaseService,
+  ) {}
 }

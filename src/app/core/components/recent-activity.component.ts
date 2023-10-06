@@ -14,8 +14,8 @@ import { SetRequired } from '@app/core/utils/types.util';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 
 export type HistoryItem =
-    | (SetRequired<Artist, 'listenedOn'> & { t: 'artist' })
-    | (SetRequired<Album, 'listenedOn'> & { t: 'album' });
+  | (SetRequired<Artist, 'listenedOn'> & { t: 'artist' })
+  | (SetRequired<Album, 'listenedOn'> & { t: 'album' });
 
 @Component({
   selector: 'app-recent-activity',
@@ -26,14 +26,14 @@ export type HistoryItem =
         <app-h-list buttonsTopPosition="80px">
           <div class="item" appHListItem *ngFor="let item of a">
             <app-album
-                *ngIf="item.t === 'album'"
-                [album]="item"
-                size="small"
-                (menuOpened)="menuOpened($event)"
+              *ngIf="item.t === 'album'"
+              [album]="item"
+              size="small"
+              (menuOpened)="menuOpened($event)"
             ></app-album>
             <app-artist
-                *ngIf="item.t === 'artist'"
-                [artist]="item"
+              *ngIf="item.t === 'artist'"
+              [artist]="item"
             ></app-artist>
           </div>
         </app-h-list>
@@ -80,20 +80,20 @@ export class RecentActivityComponent extends WithTrigger implements OnInit {
 
   ngOnInit(): void {
     this.a$ = merge(
-        this.history.latestPlayedAlbums$().pipe(
-            take(20),
-            map((m) => ({ ...m, t: 'album' } as HistoryItem))
-        ),
-        this.history.latestPlayedArtists$().pipe(
-            take(20),
-            map((m) => ({ ...m, t: 'artist' } as HistoryItem))
-        )
+      this.history.latestPlayedAlbums$().pipe(
+        take(20),
+        map((m) => ({ ...m, t: 'album' }) as HistoryItem),
+      ),
+      this.history.latestPlayedArtists$().pipe(
+        take(20),
+        map((m) => ({ ...m, t: 'artist' }) as HistoryItem),
+      ),
     ).pipe(
-        scanArray(),
-        map((r) =>
-            r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime())
-        ),
-        map((r) => r.slice(0, 20))
+      scanArray(),
+      map((r) =>
+        r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime()),
+      ),
+      map((r) => r.slice(0, 20)),
     );
   }
 }

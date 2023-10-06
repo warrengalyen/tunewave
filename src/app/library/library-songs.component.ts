@@ -33,26 +33,26 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   selector: 'app-library-songs',
   template: `
     <app-library-content
-        [sortOptions]="sortOptions"
-        [selectedSortOption]="selectedSortOption"
-        (click)="closeMenu()"
+      [sortOptions]="sortOptions"
+      [selectedSortOption]="selectedSortOption"
+      (click)="closeMenu()"
     >
       <div class="songs">
         <ng-container *ngFor="let songs$ of songsObs; let i = index">
           <ng-container
-              *ngFor="
+            *ngFor="
               let song of songs$ | async;
               trackBy: trackBy;
               let count = count
             "
           >
             <app-song-list-item
-                [song]="song"
-                [playlist]="[song]"
-                *ngIf="!sort.likes || !!song.likedOn"
-                cdkMonitorSubtreeFocus
-                (menuOpened)="menuOpened($event)"
-                [class.selected]="(currentSongPath$ | async) === song.entryPath"
+              [song]="song"
+              [playlist]="[song]"
+              *ngIf="!sort.likes || !!song.likedOn"
+              cdkMonitorSubtreeFocus
+              (menuOpened)="menuOpened($event)"
+              [class.selected]="(currentSongPath$ | async) === song.entryPath"
             ></app-song-list-item>
           </ng-container>
 
@@ -93,8 +93,8 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibrarySongsComponent
-    extends WithTrigger
-    implements OnInit, OnDestroy
+  extends WithTrigger
+  implements OnInit, OnDestroy
 {
   @ViewChild('addToPlaylist', { static: true })
   addToPlaylist!: TemplateRef<any>;
@@ -123,13 +123,13 @@ export class LibrarySongsComponent
   subscription = new Subscription();
 
   currentSongPath$ = this.player
-      .getCurrentSong$()
-      .pipe(map((song) => song?.entryPath));
+    .getCurrentSong$()
+    .pipe(map((song) => song?.entryPath));
 
   constructor(
-      private library: LibraryFacade,
-      private route: ActivatedRoute,
-      private player: PlayerFacade
+    private library: LibraryFacade,
+    private route: ActivatedRoute,
+    private player: PlayerFacade,
   ) {
     super();
   }
@@ -137,9 +137,9 @@ export class LibrarySongsComponent
   @HostListener('window:scroll')
   update(): void {
     if (
-        window.innerHeight + window.scrollY >= document.body.scrollHeight - 64 &&
-        this.loadMore &&
-        this.sort
+      window.innerHeight + window.scrollY >= document.body.scrollHeight - 64 &&
+      this.loadMore &&
+      this.sort
     ) {
       this.pushSongs(this.sort.index, this.sort.direction, this.sort.likes);
     }
@@ -148,23 +148,23 @@ export class LibrarySongsComponent
 
   ngOnInit(): void {
     this.subscription.add(
-        this.route.queryParamMap
-            .pipe(
-                map((params) => ({
-                  index: params.get('sort') || 'lastModified',
-                  direction: ((params.get('dir') || 'desc') === 'asc'
-                      ? 'next'
-                      : 'prev') as IDBCursorDirection,
-                  likes: params.get('likes') === '1',
-                })),
-                tap((sort) => (this.sort = sort)),
-                tap(() => (this.songsObs = [])),
-                tap(() => (this.last = undefined)),
-                tap(({ index, direction, likes }) =>
-                    this.pushSongs(index, direction, likes)
-                )
-            )
-            .subscribe()
+      this.route.queryParamMap
+        .pipe(
+          map((params) => ({
+            index: params.get('sort') || 'lastModified',
+            direction: ((params.get('dir') || 'desc') === 'asc'
+              ? 'next'
+              : 'prev') as IDBCursorDirection,
+            likes: params.get('likes') === '1',
+          })),
+          tap((sort) => (this.sort = sort)),
+          tap(() => (this.songsObs = [])),
+          tap(() => (this.last = undefined)),
+          tap(({ index, direction, likes }) =>
+            this.pushSongs(index, direction, likes),
+          ),
+        )
+        .subscribe(),
     );
   }
 
@@ -173,55 +173,55 @@ export class LibrarySongsComponent
   }
 
   pushSongs(
-      index: string,
-      direction: IDBCursorDirection,
-      likes: boolean
+    index: string,
+    direction: IDBCursorDirection,
+    likes: boolean,
   ): void {
     this.loadMore = false;
 
     const query: IDBKeyRange | null = !this.last
-        ? null
-        : direction === 'next'
-            ? IDBKeyRange.lowerBound(this.last.key, false)
-            : IDBKeyRange.upperBound(this.last.key, false);
+      ? null
+      : direction === 'next'
+      ? IDBKeyRange.lowerBound(this.last.key, false)
+      : IDBKeyRange.upperBound(this.last.key, false);
 
     const predicate: ((song: Song) => boolean) | undefined = likes
-        ? (song) => !!song.likedOn
-        : undefined;
+      ? (song) => !!song.likedOn
+      : undefined;
 
     this.songsObs.push(
-        this.library.getSongs(index, query, direction, predicate).pipe(
-            skipWhile((res) =>
-                query
-                    ? res.key !== this.last?.key &&
-                    res.primaryKey !== this.last?.primaryKey
-                    : false
+      this.library.getSongs(index, query, direction, predicate).pipe(
+        skipWhile((res) =>
+          query
+            ? res.key !== this.last?.key &&
+              res.primaryKey !== this.last?.primaryKey
+            : false,
+        ),
+        skip(query ? 1 : 0),
+        take(150),
+        scan(
+          (acc, cur) => [...acc, cur],
+          [] as {
+            value: Song;
+            key: IDBValidKey;
+            primaryKey: IDBValidKey;
+          }[],
+        ),
+        publish((m$) =>
+          merge(
+            m$.pipe(
+              last(),
+              tap((songs) => (this.last = songs[songs.length - 1])),
+              tap(() => (this.loadMore = true)),
+              tapError(() => (this.loadMore = false)),
+              concatMap(() => EMPTY),
+              catchError(() => EMPTY),
             ),
-            skip(query ? 1 : 0),
-            take(150),
-            scan(
-                (acc, cur) => [...acc, cur],
-                [] as {
-                  value: Song;
-                  key: IDBValidKey;
-                  primaryKey: IDBValidKey;
-                }[]
-            ),
-            publish((m$) =>
-                merge(
-                    m$.pipe(
-                        last(),
-                        tap((songs) => (this.last = songs[songs.length - 1])),
-                        tap(() => (this.loadMore = true)),
-                        tapError(() => (this.loadMore = false)),
-                        concatMap(() => EMPTY),
-                        catchError(() => EMPTY)
-                    ),
-                    m$.pipe(map((values) => values.map((v) => v.value))),
-                    2
-                )
-            )
-        )
+            m$.pipe(map((values) => values.map((v) => v.value))),
+            2,
+          ),
+        ),
+      ),
     );
   }
 

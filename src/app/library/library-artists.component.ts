@@ -95,7 +95,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
     private history: HistoryService,
-    private artists: ArtistFacade
+    private artists: ArtistFacade,
   ) {
     super();
   }
@@ -115,7 +115,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.likes = sort.likes))
+      tap((sort) => (this.likes = sort.likes)),
     );
 
     // this.artists$ = sort$.pipe(
@@ -148,12 +148,12 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
               ? of(...mods).pipe(
                   mergeMap((model, index) => of(model).pipe(delay(10 * index))),
                   bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
-                  scan((acc, curr) => [...acc, ...curr])
+                  scan((acc, curr) => [...acc, ...curr]),
                 )
               : of(mods);
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   }
 

@@ -6,15 +6,15 @@ export const loadAlbums = createAction('[Album] Load Albums');
 
 export const loadAlbumsSuccess = createAction(
   '[Album] Load Album Success',
-  props<{ data: Album[] }>()
+  props<{ data: Album[] }>(),
 );
 
 export const loadAlbumsFailure = createAction(
   '[Album] Load Albums Failure',
-  props<{ error: any }>()
+  props<{ error: any }>(),
 );
 
 export const updateAlbum = createAction(
   '[Album] Update Album',
-  props<{ update: Update<Album> }>()
+  props<{ update: Update<Album> }>(),
 );

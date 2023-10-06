@@ -8,4 +8,3 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
   duration?: number;
   likedOn?: Date;
 };
-

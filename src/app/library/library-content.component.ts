@@ -96,7 +96,7 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private scroller: ScrollerService
+    private scroller: ScrollerService,
   ) {}
 
   ngOnInit(): void {
@@ -108,14 +108,14 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
               (this.selectedSortOption =
                 this.sortOptions.find(
                   (o) =>
-                    o.value === `${params.get('sort')}_${params.get('dir')}`
-                ) || this.sortOptions[0])
+                    o.value === `${params.get('sort')}_${params.get('dir')}`,
+                ) || this.sortOptions[0]),
           ),
           tap(() => (this.sortValue = this.selectedSortOption.value)),
           tap((params) => (this.likes = params.get('likes') === '1')),
-          tap(() => this.cdr.markForCheck())
+          tap(() => this.cdr.markForCheck()),
         )
-        .subscribe()
+        .subscribe(),
     );
 
     setTimeout(() =>
@@ -127,10 +127,10 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
               this.scrolledTop =
                 this.filters.nativeElement.getBoundingClientRect().y <= 112;
               this.cdr.markForCheck();
-            })
+            }),
           )
-          .subscribe()
-      )
+          .subscribe(),
+      ),
     );
   }
 

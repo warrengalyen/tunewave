@@ -143,7 +143,7 @@ export class PlayerButtonComponent implements OnInit {
 
     this.isPlaying$ = this.isCurrent$.pipe(
       switchMap((current) => (current ? this.player.getPlaying$() : of(false))),
-      tap((playing) => (this.stopped = !playing))
+      tap((playing) => (this.stopped = !playing)),
     );
 
     this.isLoading$ = this.isCurrent$.pipe(
@@ -152,8 +152,8 @@ export class PlayerButtonComponent implements OnInit {
           ? this.player
               .getLoading$()
               .pipe(throttleTime(50, undefined, { trailing: true }))
-          : of(false)
-      )
+          : of(false),
+      ),
     );
   }
 
@@ -172,12 +172,12 @@ export class PlayerButtonComponent implements OnInit {
             this.player.setPlaying();
             this.player.setPlaylist(
               this.playlist,
-              this.playlist.indexOf(this.song)
+              this.playlist.indexOf(this.song),
             );
             this.player.show();
             this.playlistPlayed.emit();
           }
-        })
+        }),
       )
       .subscribe();
   }

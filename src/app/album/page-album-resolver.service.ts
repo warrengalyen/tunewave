@@ -8,10 +8,13 @@ import { PageAlbumData } from '@app/album/page-album.component';
 
 @Injectable()
 export class PageAlbumResolverService implements Resolve<PageAlbumData> {
-  constructor(private library: LibraryFacade, private router: Router) {}
+  constructor(
+    private library: LibraryFacade,
+    private router: Router,
+  ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<PageAlbumData> | Observable<never> {
     const id = route.paramMap.get('id');
@@ -23,7 +26,7 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
 
     return this.library.getAlbumByHash(id).pipe(
       concatMap((album) =>
-        !album ? throwError(() => 'not found') : of(album)
+        !album ? throwError(() => 'not found') : of(album),
       ),
       catchError(() => {
         this.router.navigate(['/library']);
@@ -33,16 +36,16 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
         const songs$ = this.library.getAlbumTracks(album);
         const cover$ = this.library.getPicture(album.pictureKey).pipe(
           first(),
-          map((picture) => (picture ? getCover(picture) : undefined))
+          map((picture) => (picture ? getCover(picture) : undefined)),
         );
         return combineLatest([songs$, cover$]).pipe(
           map(([songs, cover]) => ({
             album,
             songs,
             cover,
-          }))
+          })),
         );
-      })
+      }),
     );
   }
 }
