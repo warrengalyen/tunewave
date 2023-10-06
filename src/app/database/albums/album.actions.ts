@@ -4,7 +4,7 @@ import { Update } from '@warrengalyen/ngrx-idb';
 
 export const loadAlbums = createAction('[Album] Load Albums');
 
-export const loadAlbumSuccess = createAction(
+export const loadAlbumsSuccess = createAction(
   '[Album] Load Album Success',
   props<{ data: Album[] }>()
 );

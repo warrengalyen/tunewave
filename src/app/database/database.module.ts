@@ -38,7 +38,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 
-const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
+const tuneWaveDatabase: ReactiveIDBDatabaseOptions = {
   name: 'tunewave',
   schema: [
     {
@@ -56,6 +56,7 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
             { name: 'artists', options: { multiEntry: true } },
             { name: 'genre', options: { multiEntry: true } },
             'album',
+            'albumHash',
             'title',
             'likedOn',
             'lastModified',
@@ -67,11 +68,10 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
         },
         {
           name: 'albums',
-          options: { autoIncrement: true },
+          options: { keyPath: 'hash' },
           indexes: [
             'name',
             { name: 'artists', options: { multiEntry: true } },
-            'hash',
             'year',
             'albumArtist',
             'likedOn',
@@ -81,8 +81,8 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
         },
         {
           name: 'artists',
-          options: { keyPath: 'name' },
-          indexes: ['hash', 'likedOn', 'listenedOn', 'lastModified'],
+          options: { keyPath: 'hash' },
+          indexes: ['name', 'likedOn', 'listenedOn', 'lastModified'],
         },
         {
           name: 'playlists',
@@ -97,7 +97,7 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
 @NgModule({
   declarations: [],
   imports: [
-    IndexedDBModule.forRoot(musicSourceDatabase),
+    IndexedDBModule.forRoot(tuneWaveDatabase),
     EffectsModule.forFeature([
       AlbumEffects,
       ArtistEffects,
