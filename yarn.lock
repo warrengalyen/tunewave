@@ -1519,6 +1519,13 @@
     dot "^2.0.0-beta.1"
     fs-extra "^11.1.1"
 
+"@warrengalyen/ngx-idb@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@warrengalyen/ngx-idb/-/ngx-idb-0.1.0.tgz#c86846fec0c06634d7c6b8128ae6b5c2b405a005"
+  integrity sha512-l/qEKcV3XthUsCmqwcvFemsXmm2uaF1dc9dPZr8GIDSltlDebjgwaRBq+kyqHBIF0dWYZthVQFl/jkr2Jayabg==
+  dependencies:
+    tslib "^2.3.0"
+
 "@warrengalyen/reactive-idb@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@warrengalyen/reactive-idb/-/reactive-idb-1.2.1.tgz#bbfe69af52c11d3590ef45a8d25c6ad2d3bbd322"
@@ -2581,7 +2588,7 @@
   resolved "https://registry.yarnpkg.com/@types/wicg-file-system-access/-/wicg-file-system-access-2020.9.6.tgz#da34476b1e29451c8b7aa1a6db86b185647cd970"
   integrity sha512-6hogE75Hl2Ov/jgp8ZhDaGmIF/q3J07GtXf8nCJCwKTHq7971po5+DId7grft09zG7plBwpF6ZU0yx9Du4/e1A==
 
-"@types/wicg-mediasession@^1.1.5":
+"@types/wicg-mediasession@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@types/wicg-mediasession/-/wicg-mediasession-1.1.5.tgz#4d7c69d44329183301b8f9c705e91caac0803183"
   integrity sha512-YkzDCYyedkGPXI4uHoKKbQNLkz/ugG+sccL7eUFI3Dd24yEDM5wzvOfMXzofnpnZCDRRN4NXNUAOLMMY1rvrmQ==
