@@ -56,7 +56,7 @@ const tuneWaveDatabase: ReactiveIDBDatabaseOptions = {
             { name: 'artists', options: { multiEntry: true } },
             { name: 'genre', options: { multiEntry: true } },
             'album',
-            'albumHash',
+            'albumId',
             'title',
             'likedOn',
             'lastModified',

@@ -155,17 +155,16 @@ $background-color: mat.get-color-from-palette(
 html {
   //scroll-behavior: smooth;
   overflow-x: hidden;
-}
-
-html,
-body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   color: $text-color;
   background-color: $background-color;
+  min-height: 100%;
+  display: flex;
 }
 p {
   margin: 0;

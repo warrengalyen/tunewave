@@ -52,6 +52,22 @@ export class DatabaseService {
       )
     );
   }
+  // getAll<T>(
+  //   store: string,
+  //   query?: IDBValidKey | IDBKeyRange | null,
+  //   count?: number,
+  //   index?: string
+  // ): Observable<T[]> {
+  //   return this.db$.pipe(
+  //     concatMap((db) => db.transaction$(store)),
+  //     map((transaction) =>
+  //       index
+  //         ? transaction.objectStore<T>(store).index(index)
+  //         : transaction.objectStore<T>(store)
+  //     ),
+  //     concatMap((objStore) => objStore.getAll$(query, count))
+  //   );
+  // }
 
   getAllValues$<T>(
     keys: IDBValidKey[],
@@ -129,7 +145,12 @@ export class DatabaseService {
     );
   }
 
-  getAll$<T>(store: string, index?: string): Observable<T[]> {
+  getAll$<T>(
+    store: string,
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    count?: number
+  ): Observable<T[]> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) =>
@@ -137,7 +158,7 @@ export class DatabaseService {
           ? transaction.objectStore<T>(store).index(index)
           : transaction.objectStore<T>(store)
       ),
-      concatMap((s) => s.getAll$(undefined, 200))
+      concatMap((s) => s.getAll$(query, count))
     );
   }
 

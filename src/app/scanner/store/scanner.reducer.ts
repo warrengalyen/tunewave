@@ -8,17 +8,17 @@ const format = (value: number) => formatNumber(value, 'en_US');
 export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   initialState,
 
+  on(Actions.abortScan, () => ({ ...initialState })),
   on(Actions.scanAborted, () => ({ ...initialState })),
 
   // Step 1
   on(Actions.openDirectory, () => ({ ...initialState })),
-  on(Actions.openDirectorySuccess, (state) => ({ ...state })),
+  on(Actions.openDirectorySuccess, (state) => state),
   on(Actions.openDirectoryFailure, () => ({ ...initialState })),
 
   // Step 2
   on(Actions.scanEntries, (state) => ({
     ...state,
-    // @ts-ignore
     state: 'scanning',
     step: 'Scanning...',
     stepSub: 'Please wait',
@@ -46,7 +46,6 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.scanEntriesFailure, (state, { error }) => ({
     ...state,
-    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -67,7 +66,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     const extractedCount = state.extractedCount + 1;
     return {
       ...state,
-      stepSub: `${song.albumartist || song.artist} - ${song.title}`,
+      stepSub: `${song.tags.albumartist || song.tags.artist} - ${song.title}`,
       progress: (extractedCount / state.scannedCount) * 100,
       progressDisplay:
         Math.floor((extractedCount / state.scannedCount) * 100) + '%',
@@ -103,7 +102,6 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.extractEntriesFailure, (state, { error }) => ({
     ...state,
-    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -120,7 +118,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.buildAlbumSuccess, (state, { album }) => ({
     ...state,
-    stepSub: `${album.artists[0]} - ${album.name}`,
+    stepSub: `${album.artist} - ${album.title}`,
     progressDisplay: `${format(state.albumsCount + 1)}`,
     progressDisplaySub: state.albumsCount + 1 > 1 ? 'albums' : 'album',
     albumsCount: state.albumsCount + 1,
@@ -137,7 +135,6 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.buildAlbumsFailure, (state, { error }) => ({
     ...state,
-    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -170,7 +167,6 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.buildArtistsFailure, (state, { error }) => ({
     ...state,
-    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -181,7 +177,6 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   // Final
   on(Actions.scanSuccess, (state) => ({
     ...state,
-    // @ts-ignore
     state: 'success',
     step: 'Library built',
     stepSub:

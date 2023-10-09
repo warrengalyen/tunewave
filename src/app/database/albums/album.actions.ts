@@ -18,3 +18,7 @@ export const updateAlbum = createAction(
   '[Album] Update Album',
   props<{ update: IdUpdate<Album> }>()
 );
+export const upsertAlbum = createAction(
+  '[Album] Upsert Album',
+  props<{ album: Album }>()
+);
