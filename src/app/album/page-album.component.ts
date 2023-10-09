@@ -1,106 +1,87 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   HostListener,
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { concatMap, Observable, switchMap } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
-import { map } from 'rxjs/operators';
+import { filter, first, map, shareReplay, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { MenuItem } from '@app/core/components/menu.component';
-import { LibraryFacade } from '@app/library/store/library.facade';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
-import { HistoryService } from '@app/core/services/history.service';
 import { WithTrigger } from '@app/core/classes/with-trigger';
-
-export type PageAlbumData = {
-  album: Album;
-  songs: Song[];
-  cover: string | undefined;
-};
+import { AlbumFacade } from '@app/database/albums/album.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-page-album',
   template: `
-    <ng-container *ngIf="info$ | async as info">
+    <ng-container *ngIf="album$ | async as album">
       <header>
         <app-container-page class="header-container">
           <div class="info">
             <div class="cover" style="--aspect-ratio:1">
-              <img [src]="info.cover" alt="cover" *ngIf="info.cover" />
-              <app-icon
-                [path]="icons.album"
-                [fullWidth]="true"
-                *ngIf="!info.cover"
-              ></app-icon>
+              <img
+                [src]="cover"
+                alt="cover"
+                *ngIf="cover$ | async as cover; else icon"
+              />
+              <ng-template #icon>
+                <app-icon [path]="icons.album" [fullWidth]="true"></app-icon>
+              </ng-template>
             </div>
             <div class="metadata">
-              <app-title>{{ info.album.name }}</app-title>
+              <app-title>{{ album.name }}</app-title>
               <p>
                 <span>Album</span> •
                 <a
-                  *ngIf="info.album.albumArtist"
-                  [routerLink]="[
-                    '/',
-                    'artist',
-                    getHash(info.album.albumArtist)
-                  ]"
-                  >{{ info.album.albumArtist }}</a
+                  *ngIf="album.albumArtist"
+                  [routerLink]="['/', 'artist', getHash(album.albumArtist)]"
+                  >{{ album.albumArtist }}</a
                 >
-                <span
-                  *ngIf="
-                    !info.album.albumArtist && info.album.artists.length > 1
-                  "
-                >
+                <span *ngIf="!album.albumArtist && album.artists.length > 1">
                   Various artists
                 </span>
-                • <span>{{ info.album.year }}</span>
+                • <span>{{ album.year }}</span>
               </p>
-              <p class="stats">
-                {{ info.songs.length }} songs •
-                {{ getLength(info.songs) }} minutes
+              <p class="stats" *ngIf="songs$ | async as songs">
+                {{ songs.length }} songs • {{ getLength(songs) }} minutes
               </p>
             </div>
           </div>
           <div class="actions">
-            <button
-              mat-raised-button
-              color="accent"
-              (click)="play(info.album, info.songs)"
-            >
+            <button mat-raised-button color="accent" (click)="play(album)">
               <app-icon [path]="icons.play"></app-icon>
               <span>Play</span>
             </button>
-            <button mat-stroked-button (click)="toggleLiked(info.album)">
+            <button mat-stroked-button (click)="toggleLiked(album)">
               <app-icon
-                [path]="!!info.album.likedOn ? icons.heart : icons.heartOutline"
+                [path]="!!album.likedOn ? icons.heart : icons.heartOutline"
               ></app-icon>
-              <span *ngIf="!info.album.likedOn">Add to your likes</span>
-              <span *ngIf="!!info.album.likedOn">Remove from your likes</span>
+              <span *ngIf="!album.likedOn">Add to your likes</span>
+              <span *ngIf="!!album.likedOn">Remove from your likes</span>
             </button>
             <app-menu
               [disableRipple]="true"
               [hasBackdrop]="true"
-              [menuItems]="menuItems$ | async"
+              [menuItems]="menuItems"
             ></app-menu>
           </div>
         </app-container-page>
       </header>
       <app-container-page>
-        <div class="track-list">
+        <div class="track-list" *ngIf="songs$ | async as songs">
           <app-track-list-item
             [song]="song"
-            [playlist]="info.songs"
-            *ngFor="let song of info.songs; let i = index; trackBy: trackBy"
-            [trackNumber]="i + 1"
+            [playlist]="songs"
+            *ngFor="let song of songs; trackBy: trackBy"
+            [trackNumber]="song.track.no"
             [class.selected]="(currentSongPath$ | async) === song.entryPath"
             (menuOpened)="menuOpened($event)"
             cdkMonitorSubtreeFocus
@@ -127,24 +108,30 @@ export type PageAlbumData = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageAlbumComponent extends WithTrigger implements OnInit {
-  icons = Icons;
-  info$!: Observable<PageAlbumData>;
+  album$!: Observable<Album>;
+
+  songs$!: Observable<Song[]>;
 
   currentSongPath$ = this.player
     .getCurrentSong$()
     .pipe(map((song) => song?.entryPath));
 
-  menuItems$!: Observable<MenuItem[]>;
+  cover$!: Observable<string | undefined>;
+
+  menuItems!: MenuItem[];
+
+  icons = Icons;
 
   constructor(
     private route: ActivatedRoute,
     private player: PlayerFacade,
-    private library: LibraryFacade,
-    private snack: MatSnackBar,
-    private dialog: MatDialog,
+    // private snack: MatSnackBar,
+    // private dialog: MatDialog,
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef,
-    private history: HistoryService,
+    // private history: HistoryService,
+    private albums: AlbumFacade,
+    private pictures: PictureFacade,
+    private songs: SongFacade
   ) {
     super();
   }
@@ -160,45 +147,95 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   }
 
   ngOnInit(): void {
-    this.info$ = this.route.data.pipe(map((data) => data.info));
-    this.menuItems$ = this.info$.pipe(
-      map((info) => this.getMenuItem(info.album, info.songs)),
+    const albumKey = this.route.snapshot.data.info;
+
+    this.album$ = this.albums.getByKey(albumKey) as Observable<Album>;
+
+    this.cover$ = this.album$.pipe(
+      switchMap((album) => this.pictures.getCover(album.pictureKey))
     );
+
+    this.songs$ = this.album$.pipe(
+      first(),
+      concatMap((album) => this.songs.getByAlbumKey(album.hash)),
+      filter((songs): songs is Song[] => !!songs),
+      shareReplay(1)
+    );
+
+    this.menuItems = this.getMenuItem();
   }
 
-  getMenuItem(album: Album, songs: Song[]): MenuItem[] {
-    return [
-      {
-        text: 'Shuffle play',
-        icon: this.icons.shuffle,
-        click: () => {
+  play(album: Album, index = 0): void {
+    this.songs$
+      .pipe(
+        first(),
+        tap((songs) => {
+          this.player.setPlaying();
+          this.player.setPlaylist(songs, index);
+          this.player.show();
+          // this.history.albumPlayed(album);
+        })
+      )
+      .subscribe();
+  }
+
+  shufflePlay(): void {
+    this.songs$
+      .pipe(
+        first(),
+        tap((songs) => {
           this.player.setPlaying();
           this.player.setPlaylist(songs);
           this.player.shuffle();
           this.player.show();
-          this.history.albumPlayed(album);
-        },
+          // this.history.albumPlayed(album);
+        })
+      )
+      .subscribe();
+  }
+
+  addToQueue(next?: boolean): void {
+    this.songs$
+      .pipe(
+        first(),
+        tap((songs) => {
+          this.player.addToPlaylist(songs, next);
+          this.player.show();
+        })
+      )
+      .subscribe();
+  }
+
+  addToPlaylist(): void {
+    this.songs$
+      .pipe(
+        first(),
+        tap((songs) => this.helper.addSongsToPlaylist(songs))
+      )
+      .subscribe();
+  }
+
+  getMenuItem(): MenuItem[] {
+    return [
+      {
+        text: 'Shuffle play',
+        icon: this.icons.shuffle,
+        click: () => this.shufflePlay(),
       },
       {
         text: 'Play next',
         icon: this.icons.playlistPlay,
-        click: () => {
-          this.player.addToPlaylist(songs, true);
-          this.player.show();
-        },
+        click: () => this.addToQueue(true),
       },
       {
         text: 'Add to queue',
         icon: this.icons.playlistMusic,
-        click: () => {
-          this.player.addToPlaylist(songs);
-          this.player.show();
-        },
+        click: () => this.addToQueue(),
       },
       {
         text: 'Add to playlist',
         icon: this.icons.playlistPlus,
-        click: () => this.addAlbumToPlaylist(songs),
+        click: () => this.addToPlaylist(),
       },
     ];
   }
@@ -212,19 +249,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     return hash(albumArtist);
   }
 
-  play(album: Album, songs: Song[], index = 0): void {
-    this.player.setPlaying();
-    this.player.setPlaylist(songs, index);
-    this.player.show();
-    this.history.albumPlayed(album);
-  }
-
-  addAlbumToPlaylist(songs: Song[]): void {
-    this.helper.addSongsToPlaylist(songs).subscribe();
-  }
-
   toggleLiked(album: Album): void {
-    this.helper.toggleLikedAlbum(album);
-    // .subscribe(() => this.cdr.markForCheck());
+    this.albums.toggleLiked(album);
   }
 }

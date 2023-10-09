@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import {
+  createPlaylist,
   loadPlaylists,
   loadPlaylistsFailure,
   loadPlaylistsSuccess,
@@ -11,7 +12,9 @@ import { createIDBEntityAdapter, IDBEntityState } from '@warrengalyen/ngrx-idb';
 export const playlistFeatureKey = 'playlists';
 
 const indexes = ['title', 'createdOn', 'listenedOn'] as const;
-export type PlaylistIndex = (typeof indexes)[number];
+
+export type PlaylistIndex = typeof indexes[number];
+
 export type PlaylistState = IDBEntityState<Playlist, PlaylistIndex>;
 
 export const playlistAdapter = createIDBEntityAdapter<Playlist, PlaylistIndex>({
@@ -26,10 +29,13 @@ export const playlistReducer = createReducer(
 
   on(loadPlaylists, (state) => state),
   on(loadPlaylistsSuccess, (state, action) =>
-    playlistAdapter.addMany(action.data, state),
+    playlistAdapter.addMany(action.data, state)
   ),
-  on(loadPlaylistsFailure, (state, action) => state),
+  on(loadPlaylistsFailure, (state) => state),
   on(updatePlaylist, (state, action) =>
-    playlistAdapter.updateOne(action.update, state),
+    playlistAdapter.updateOne(action.update, state)
   ),
+  on(createPlaylist, (state, action) =>
+    playlistAdapter.addOne(action.playlist, state)
+  )
 );

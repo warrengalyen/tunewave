@@ -50,7 +50,7 @@ export const playerAnimation: AnimationTriggerMetadata = trigger(
       }),
       animate('300ms ease-out', style({ transform: 'translateY(72px)' })),
     ]),
-  ],
+  ]
 );
 
 export const slideInAnimation: AnimationTriggerMetadata = trigger(
@@ -99,7 +99,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
         optional: true,
       }),
     ]),
-  ],
+  ]
 );
 
 @Component({
@@ -156,7 +156,7 @@ export class MainComponent implements OnInit {
     private scroller: ScrollerService,
     private player: PlayerFacade,
     private albums: AlbumFacade,
-    private store: Store,
+    private store: Store
   ) {}
 
   @HostListener('window:scroll', ['$event'])

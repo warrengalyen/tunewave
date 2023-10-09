@@ -6,15 +6,15 @@ export const loadArtists = createAction('[Artist] Load Artists');
 
 export const loadArtistsSuccess = createAction(
   '[Artist] Load Artists Success',
-  props<{ data: Artist[] }>(),
+  props<{ data: Artist[] }>()
 );
 
 export const loadArtistsFailure = createAction(
   '[Artist] Load Artists Failure',
-  props<{ error: any }>(),
+  props<{ error: any }>()
 );
 
 export const updateArtist = createAction(
   '[Artist] Update Artist',
-  props<{ update: Update<Artist> }>(),
+  props<{ update: Update<Artist> }>()
 );

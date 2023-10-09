@@ -5,10 +5,10 @@ export const loadEntries = createAction('[Entry] Load Entries');
 
 export const loadEntriesSuccess = createAction(
   '[Entry] Load Entries Success',
-  props<{ data: Entry[] }>(),
+  props<{ data: Entry[] }>()
 );
 
 export const loadEntriesFailure = createAction(
   '[Entry] Load Entries Failure',
-  props<{ error: any }>(),
+  props<{ error: any }>()
 );

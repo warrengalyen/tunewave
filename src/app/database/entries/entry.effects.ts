@@ -22,14 +22,11 @@ export class EntryEffects {
           // filter((arr) => arr.length > 0),
           toArray(),
           map((data) => loadEntriesSuccess({ data })),
-          catchError((error) => of(loadEntriesFailure({ error }))),
-        ),
-      ),
-    ),
+          catchError((error) => of(loadEntriesFailure({ error })))
+        )
+      )
+    )
   );
 
-  constructor(
-    private actions$: Actions,
-    private database: DatabaseService,
-  ) {}
+  constructor(private actions$: Actions, private database: DatabaseService) {}
 }

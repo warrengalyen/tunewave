@@ -28,10 +28,7 @@ export class ScannerFacade {
   progressDisplay$ = this.store.select(selectProgressDisplay);
   progressDisplaySub$ = this.store.select(selectProgressDisplaySub);
 
-  constructor(
-    private store: Store,
-    private storage: DatabaseService,
-  ) {}
+  constructor(private store: Store, private storage: DatabaseService) {}
 
   abort(): void {
     this.store.dispatch(abortScan());
@@ -44,12 +41,12 @@ export class ScannerFacade {
   saveSong(song: Song, pictures?: Picture[]): Observable<Song> {
     return this.storage.open$(['pictures', 'songs'], 'readwrite').pipe(
       concatMap((transaction) => {
-        const makeSong = (key?: IDBValidKey): Song => ({
+        const makeSong = (key?: string): Song => ({
           ...song,
           pictureKey: key,
         });
 
-        const saveSong = (pictureKey?: IDBValidKey) => {
+        const saveSong = (pictureKey?: string) => {
           const song1 = makeSong(pictureKey);
           return (
             this.storage
@@ -61,7 +58,7 @@ export class ScannerFacade {
 
         if (!pictures || pictures.length === 0) {
           return this.searchForCover(makeSong()).pipe(
-            concatMap((coverKey) => saveSong(coverKey)),
+            concatMap((coverKey) => saveSong(coverKey))
           );
         }
 
@@ -71,18 +68,18 @@ export class ScannerFacade {
           .pipe(
             concatMap((key) =>
               key
-                ? saveSong(key)
+                ? saveSong(key as string)
                 : transaction
-                    .objectStore('pictures')
-                    .add$(pictures[0])
-                    .pipe(concatMap((pictKey) => saveSong(pictKey))),
-            ),
+                  .objectStore('pictures')
+                  .add$(pictures[0])
+                  .pipe(concatMap((pictKey) => saveSong(pictKey as string)))
+            )
           );
-      }),
+      })
     );
   }
 
-  searchForCover(song: Song): Observable<IDBValidKey | undefined> {
+  searchForCover(song: Song): Observable<string | undefined> {
     if (!song.album) {
       return of(undefined);
     }
@@ -99,13 +96,13 @@ export class ScannerFacade {
               t
                 .objectStore<Entry>('entries')
                 .index('parent')
-                .getAll$(parent as string),
+                .getAll$(parent as string)
             ),
             map((files) =>
               files.filter(
                 (file) =>
-                  file.name.endsWith('.jpg') || file.name.endsWith('.png'),
-              ),
+                  file.name.endsWith('.jpg') || file.name.endsWith('.png')
+              )
             ),
             concatMap((files) => {
               if (files.length === 0) {
@@ -115,17 +112,18 @@ export class ScannerFacade {
               return from((bestFit as FileEntry).handle.getFile()).pipe(
                 concatMap((file: File) => file.arrayBuffer()),
                 map((buffer: ArrayBuffer) => this.arrayBufferToBase64(buffer)),
-                concatMap((base64) =>
-                  this.storage.put$('pictures', {
-                    data: base64,
-                    hash: hash(base64),
-                    format: this.getFormat(bestFit as FileEntry),
-                  }),
-                ),
+                concatMap(
+                  (base64) =>
+                    this.storage.put$('pictures', {
+                      data: base64,
+                      hash: hash(base64),
+                      format: this.getFormat(bestFit as FileEntry),
+                    }) as Observable<string>
+                )
               );
-            }),
-          ),
-      ),
+            })
+          )
+      )
     );
   }
 
@@ -136,7 +134,7 @@ export class ScannerFacade {
         (file) =>
           file.name.toLowerCase().includes('cover') ||
           file.name.toLowerCase().includes('front') ||
-          file.name.toLowerCase().includes('folder'),
+          file.name.toLowerCase().includes('folder')
       ) ||
       files[0]
     );

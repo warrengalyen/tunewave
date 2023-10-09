@@ -19,7 +19,7 @@ export const pictureReducer = createReducer(
 
   on(PictureActions.loadPictures, (state) => state),
   on(PictureActions.loadPicturesSuccess, (state, { data }) =>
-    pictureAdapter.addMany(data, state),
+    pictureAdapter.addMany(data, state)
   ),
-  on(PictureActions.loadPicturesFailure, (state, action) => state),
+  on(PictureActions.loadPicturesFailure, (state, action) => state)
 );

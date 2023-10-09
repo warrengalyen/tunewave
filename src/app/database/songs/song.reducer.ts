@@ -20,7 +20,7 @@ const indexes = [
   { name: 'lastModified' },
 ] as const;
 const indexNames = indexes.map((i) => i.name);
-export type SongIndex = (typeof indexNames)[number];
+export type SongIndex = typeof indexNames[number];
 
 export const songAdapter = createIDBEntityAdapter<Song, SongIndex>({
   keySelector: (model) => model.entryPath,
@@ -35,10 +35,8 @@ export const songReducer = createReducer(
 
   on(loadSongs, (state) => state),
   on(loadSongsSuccess, (state, action) =>
-    songAdapter.addMany(action.data, state),
+    songAdapter.addMany(action.data, state)
   ),
-  on(loadSongsFailure, (state, action) => state),
-  on(updateSong, (state, action) =>
-    songAdapter.updateOne(action.update, state),
-  ),
+  on(loadSongsFailure, (state) => state),
+  on(updateSong, (state, action) => songAdapter.updateOne(action.update, state))
 );

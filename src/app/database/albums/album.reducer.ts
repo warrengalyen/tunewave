@@ -22,7 +22,7 @@ const indexes = [
 
 const indexNames = indexes.map((i) => i.name);
 
-export type AlbumIndex = (typeof indexNames)[number];
+export type AlbumIndex = typeof indexNames[number];
 
 export const albumAdapter = createIDBEntityAdapter<Album, AlbumIndex>({
   keySelector: (album: Album) => album.hash,
@@ -38,10 +38,10 @@ export const albumReducer = createReducer(
 
   on(loadAlbums, (state) => state),
   on(loadAlbumsSuccess, (state, action) =>
-    albumAdapter.addMany(action.data, state),
+    albumAdapter.addMany(action.data, state)
   ),
   on(loadAlbumsFailure, (state, action) => state),
   on(updateAlbum, (state, action) =>
-    albumAdapter.updateOne(action.update, state),
-  ),
+    albumAdapter.updateOne(action.update, state)
+  )
 );

@@ -29,15 +29,15 @@ export class ExtractorService {
   }
 
   extract(
-    entry: FileEntry,
+    entry: FileEntry
   ): Observable<Either<{ song: Song; pictures?: Picture[] }>> {
     return defer(() => from(entry.handle.getFile())).pipe(
       // filter(file => this.supportedTypes.includes(file.type)),
       concatMap((file) =>
         from(
           import('music-metadata-browser').then((musicMetadata) =>
-            musicMetadata.parseBlob(file /*{duration: true}*/),
-          ),
+            musicMetadata.parseBlob(file /*{duration: true}*/)
+          )
         ).pipe(
           map(({ common, format }) => {
             const pictures = this.toPicture(common.picture);
@@ -52,10 +52,10 @@ export class ExtractorService {
               },
               pictures,
             });
-          }),
-        ),
+          })
+        )
       ),
-      catchError((error) => of(left(error))),
+      catchError((error) => of(left(error)))
     );
   }
 

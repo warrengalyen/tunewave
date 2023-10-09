@@ -23,14 +23,11 @@ export class ArtistEffects {
           // filter((arr) => arr.length > 0),
           toArray(),
           map((data) => loadArtistsSuccess({ data })),
-          catchError((error) => of(loadArtistsFailure({ error }))),
-        ),
-      ),
-    ),
+          catchError((error) => of(loadArtistsFailure({ error })))
+        )
+      )
+    )
   );
 
-  constructor(
-    private actions$: Actions,
-    private database: DatabaseService,
-  ) {}
+  constructor(private actions$: Actions, private database: DatabaseService) {}
 }

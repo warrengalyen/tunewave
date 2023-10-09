@@ -11,7 +11,7 @@ export const entryFeatureKey = 'entries';
 
 export const indexes = ['parent'] as const;
 
-export type EntryIndex = (typeof indexes)[number];
+export type EntryIndex = typeof indexes[number];
 
 export type EntryState = IDBEntityState<Entry, EntryIndex>;
 
@@ -27,7 +27,7 @@ export const entryReducer = createReducer(
 
   on(loadEntries, (state) => state),
   on(loadEntriesSuccess, (state, action) =>
-    entryAdapter.addMany(action.data, state),
+    entryAdapter.addMany(action.data, state)
   ),
-  on(loadEntriesFailure, (state, action) => state),
+  on(loadEntriesFailure, (state, action) => state)
 );

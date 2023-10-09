@@ -82,18 +82,18 @@ export class RecentActivityComponent extends WithTrigger implements OnInit {
     this.a$ = merge(
       this.history.latestPlayedAlbums$().pipe(
         take(20),
-        map((m) => ({ ...m, t: 'album' }) as HistoryItem),
+        map((m) => ({ ...m, t: 'album' } as HistoryItem))
       ),
       this.history.latestPlayedArtists$().pipe(
         take(20),
-        map((m) => ({ ...m, t: 'artist' }) as HistoryItem),
-      ),
+        map((m) => ({ ...m, t: 'artist' } as HistoryItem))
+      )
     ).pipe(
       scanArray(),
       map((r) =>
-        r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime()),
+        r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime())
       ),
-      map((r) => r.slice(0, 20)),
+      map((r) => r.slice(0, 20))
     );
   }
 }

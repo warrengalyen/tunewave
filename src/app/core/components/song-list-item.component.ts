@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -13,7 +12,8 @@ import { Icons } from '@app/core/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { Observable } from 'rxjs';
-import { LibraryFacade } from '@app/library/store/library.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-song-list-item',
@@ -193,13 +193,13 @@ export class SongListItemComponent implements OnInit {
   icons = Icons;
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private helper: ComponentHelperService,
-    private library: LibraryFacade,
+    private pictures: PictureFacade,
+    private songs: SongFacade
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = this.library.getCover(this.song.pictureKey);
+    this.cover$ = this.pictures.getCover(this.song.pictureKey);
   }
 
   getHash(s: string): string {
@@ -207,7 +207,7 @@ export class SongListItemComponent implements OnInit {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
+    this.songs.toggleLiked(song);
   }
 
   playNext(song: Song): void {
@@ -219,6 +219,6 @@ export class SongListItemComponent implements OnInit {
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]).subscribe();
+    this.helper.addSongsToPlaylist([song]);
   }
 }

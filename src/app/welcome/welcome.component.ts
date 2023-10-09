@@ -71,10 +71,7 @@ export class WelcomeComponent implements OnInit {
   @ViewChild('welcomeDialog', { static: true })
   welcomeDialog!: TemplateRef<any>;
 
-  constructor(
-    private scanner: ScannerFacade,
-    private dialog: MatDialog,
-  ) {}
+  constructor(private scanner: ScannerFacade, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.dialog

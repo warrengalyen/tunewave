@@ -14,12 +14,13 @@ import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { concatMap, map, shareReplay, tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { first, map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
-import { getCover } from '@app/database/pictures/picture.model';
+import { AlbumFacade } from '@app/database/albums/album.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-album',
@@ -97,23 +98,18 @@ export class AlbumComponent implements OnInit {
     private helper: ComponentHelperService,
     private history: HistoryService,
     private pictures: PictureFacade,
+    private albums: AlbumFacade,
+    private songs: SongFacade
   ) {}
 
   ngOnInit(): void {
     this.updateMenu();
 
-    this.playlist$ = this.library
-      .getAlbumTracks(this.album)
-      .pipe(shareReplay(1));
+    this.playlist$ = this.songs.getByAlbumKey(this.album.hash);
 
     this.song$ = this.playlist$.pipe(map((pl) => pl[0]));
 
-    this.cover$ = this.pictures.getByHash(this.album.pictureKey as string).pipe(
-      concatMap((p) =>
-        p ? of(p) : this.library.getPicture(this.album.pictureKey),
-      ),
-      map((p) => (p ? getCover(p) : undefined)),
-    );
+    this.cover$ = this.pictures.getCover(this.album.pictureKey);
   }
 
   /*play() {
@@ -139,31 +135,33 @@ export class AlbumComponent implements OnInit {
         icon: Icons.shuffle,
         text: 'Shuffle play',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(
+              first(),
               tap((tracks) => {
                 this.player.setPlaying();
                 this.player.setPlaylist(tracks);
                 this.player.shuffle();
                 this.player.show();
-              }),
+              })
             )
             .subscribe();
-          this.history.albumPlayed(this.album);
+          // this.history.albumPlayed(this.album);
         },
       },
       {
         icon: Icons.playlistPlay,
         text: 'Play next',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(
+              first(),
               tap((tracks) => {
                 this.player.addToPlaylist(tracks, true);
                 this.player.show();
-              }),
+              })
             )
             .subscribe();
         },
@@ -172,13 +170,14 @@ export class AlbumComponent implements OnInit {
         icon: Icons.playlistMusic,
         text: 'Add to queue',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(
+              first(),
               tap((tracks) => {
                 this.player.addToPlaylist(tracks);
                 this.player.show();
-              }),
+              })
             )
             .subscribe();
         },
@@ -189,7 +188,7 @@ export class AlbumComponent implements OnInit {
           ? 'Remove from your likes'
           : 'Add to your likes',
         click: () => {
-          this.helper.toggleLikedAlbum(this.album); /*.subscribe(() => {
+          this.albums.toggleLiked(this.album); /*.subscribe(() => {
             this.updateMenu();
             // this.update.next(this.album);
           });*/
@@ -199,9 +198,9 @@ export class AlbumComponent implements OnInit {
         icon: Icons.playlistPlus,
         text: 'Add to playlist',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
-            .pipe(concatMap((tracks) => this.helper.addSongsToPlaylist(tracks)))
+          this.songs
+            .getByAlbumKey(this.album.hash)
+            .pipe(tap((tracks) => this.helper.addSongsToPlaylist(tracks)))
             .subscribe();
         },
       },
@@ -217,6 +216,6 @@ export class AlbumComponent implements OnInit {
   }
 
   albumPlayed(): void {
-    this.history.albumPlayed(this.album);
+    // this.history.albumPlayed(this.album);
   }
 }

@@ -18,14 +18,11 @@ export class SongEffects {
           // filter((arr) => arr.length > 0),
           toArray(),
           map((data) => loadSongsSuccess({ data })),
-          catchError((error) => of(loadSongsFailure({ error }))),
-        ),
-      ),
-    ),
+          catchError((error) => of(loadSongsFailure({ error })))
+        )
+      )
+    )
   );
 
-  constructor(
-    private actions$: Actions,
-    private database: DatabaseService,
-  ) {}
+  constructor(private actions$: Actions, private database: DatabaseService) {}
 }

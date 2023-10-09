@@ -23,14 +23,11 @@ export class PictureEffects {
           // filter((arr) => arr.length > 0),
           toArray(),
           map((data) => loadPicturesSuccess({ data })),
-          catchError((error) => of(loadPicturesFailure({ error }))),
-        ),
-      ),
-    ),
+          catchError((error) => of(loadPicturesFailure({ error })))
+        )
+      )
+    )
   );
 
-  constructor(
-    private actions$: Actions,
-    private database: DatabaseService,
-  ) {}
+  constructor(private actions$: Actions, private database: DatabaseService) {}
 }

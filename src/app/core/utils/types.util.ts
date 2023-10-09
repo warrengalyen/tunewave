@@ -2,7 +2,7 @@
 
 export type SetRequired<
   BaseType,
-  Keys extends keyof BaseType = keyof BaseType,
+  Keys extends keyof BaseType = keyof BaseType
 > = Omit<BaseType, Keys> &
   Required<Pick<BaseType, Keys>> extends infer InferredType
   ? { [KeyType in keyof InferredType]: InferredType[KeyType] }

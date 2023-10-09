@@ -18,7 +18,7 @@ import {
   scheduled,
 } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
-import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
+import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -95,7 +95,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
     private history: HistoryService,
-    private artists: ArtistFacade,
+    private artists: ArtistFacade
   ) {
     super();
   }
@@ -115,7 +115,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.likes = sort.likes)),
+      tap((sort) => (this.likes = sort.likes))
     );
 
     // this.artists$ = sort$.pipe(
@@ -130,10 +130,11 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     //   }),
     //   shareReplay(1)
     // );
+
     this.artists$ = sort$.pipe(
       switchMap((sort, i) =>
         this.artists.getAll(sort.index as any).pipe(
-          filter((models) => models.length > 0),
+          // filter((models) => models.length > 0),
           switchMap((models, j) => {
             let mods;
             if (sort.likes) {
@@ -146,25 +147,25 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
             }
             return j === 0 && i === 0
               ? of(...mods).pipe(
-                  mergeMap((model, index) => of(model).pipe(delay(10 * index))),
-                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
-                  scan((acc, curr) => [...acc, ...curr]),
-                )
+                mergeMap((model, index) => of(model).pipe(delay(10 * index))),
+                bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+                scan((acc, curr) => [...acc, ...curr])
+              )
               : of(mods);
-          }),
-        ),
-      ),
+          })
+        )
+      )
     );
   }
 
   trackBy = (index: number, artist: Artist): string => artist.hash;
 
   toggleLiked(artist: Artist): void {
-    this.helper.toggleLikedArtist(artist);
+    this.artists.toggleLiked(artist);
   }
 
   shufflePlay(artist: Artist): void {
     this.helper.shufflePlayArtist(artist).subscribe();
-    this.history.artistPlayed(artist);
+    // this.history.artistPlayed(artist);
   }
 }

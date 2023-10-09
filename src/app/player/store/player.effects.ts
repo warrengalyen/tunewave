@@ -30,12 +30,15 @@ import {
 import { Router } from '@angular/router';
 import { AudioService } from '@app/player/audio.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { Song } from '@app/database/songs/song.model';
-import { FileEntry } from '@app/database/entries/entry.model';
+import {
+  FileEntry,
+  requestPermission,
+} from '@app/database/entries/entry.model';
 import { tapError } from '@app/core/utils/tap-error.util';
 import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
+import { EntryFacade } from '@app/database/entries/entry.facade';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -54,11 +57,11 @@ export class PlayerEffects implements OnRunEffects {
             first(),
             tap(() => this.player.pause()),
             concatMap((playing) =>
-              this.library.getEntry(song.entryPath).pipe(
+              this.entries.getByKey(song.entryPath).pipe(
                 filter((entry): entry is FileEntry => !!entry),
                 tap((entry) => (this.handle = entry.handle)),
                 concatMap((entry) =>
-                  this.library.requestPermission(entry.handle).pipe(
+                  requestPermission(entry.handle).pipe(
                     tapError(() => this.player.hide()),
                     catchError(() => EMPTY),
                     concatMap(() => entry.handle.getFile()),
@@ -66,18 +69,18 @@ export class PlayerEffects implements OnRunEffects {
                     tap(() => this.media.setMetadata(song)),
                     tap(() =>
                       this.title.setTitle(
-                        `${song.title} • ${song.artist} - TuneWave`,
-                      ),
+                        `${song.title} • ${song.artist} - TuneWave`
+                      )
                     ),
-                    concatMap(() => (playing ? this.audio.resume() : EMPTY)),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+                    concatMap(() => (playing ? this.audio.resume() : EMPTY))
+                  )
+                )
+              )
+            )
+          )
+        )
       ),
-    { dispatch: false },
+    { dispatch: false }
   );
 
   nextSong$ = createEffect(() =>
@@ -88,71 +91,71 @@ export class PlayerEffects implements OnRunEffects {
           concatMap((hasNextSong) =>
             hasNextSong
               ? of(setPlaying({ playing: true }), setNextIndex())
-              : EMPTY,
-          ),
-        ),
-      ),
-    ),
+              : EMPTY
+          )
+        )
+      )
+    )
   );
 
   resume$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(resume),
-        tap(() => this.audio.resume()),
+        tap(() => this.audio.resume())
       ),
     {
       dispatch: false,
-    },
+    }
   );
 
   pause$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(pause),
-        tap(() => this.audio.pause()),
+        tap(() => this.audio.pause())
       ),
     {
       dispatch: false,
-    },
+    }
   );
 
   volume$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(setVolume),
-        tap(({ volume }) => this.audio.setVolume(volume)),
+        tap(({ volume }) => this.audio.setVolume(volume))
       ),
     {
       dispatch: false,
-    },
+    }
   );
 
   volume2$ = createEffect(() =>
-    this.audio.volume$.pipe(map((volume) => setVolume({ volume }))),
+    this.audio.volume$.pipe(map((volume) => setVolume({ volume })))
   );
 
   mute$ = createEffect(
     () => () =>
       this.actions$.pipe(
         ofType(toggleMute),
-        tap(() => this.audio.toggleMute()),
+        tap(() => this.audio.toggleMute())
       ),
     {
       dispatch: false,
-    },
+    }
   );
 
   playing$ = createEffect(() =>
-    this.audio.playing$.pipe(map((playing) => setPlaying({ playing }))),
+    this.audio.playing$.pipe(map((playing) => setPlaying({ playing })))
   );
 
   duration$ = createEffect(() =>
-    this.audio.duration$.pipe(map((duration) => setDuration({ duration }))),
+    this.audio.duration$.pipe(map((duration) => setDuration({ duration })))
   );
 
   loading$ = createEffect(() =>
-    this.audio.loading$.pipe(map((loading) => setLoading({ loading }))),
+    this.audio.loading$.pipe(map((loading) => setLoading({ loading })))
   );
 
   constructor(
@@ -160,15 +163,15 @@ export class PlayerEffects implements OnRunEffects {
     private router: Router,
     private audio: AudioService,
     private player: PlayerFacade,
-    private library: LibraryFacade,
+    private entries: EntryFacade,
     private media: MediaSessionService,
-    private title: Title,
+    private title: Title
   ) {
     this.media.init();
   }
 
   ngrxOnRunEffects(
-    resolvedEffects$: Observable<EffectNotification>,
+    resolvedEffects$: Observable<EffectNotification>
   ): Observable<EffectNotification> {
     return resolvedEffects$;
   }

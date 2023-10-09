@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { tap } from 'rxjs/operators';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Injectable()
 export class MediaSessionService {
-  constructor(
-    private player: PlayerFacade,
-    private library: LibraryFacade,
-  ) {}
+  constructor(private player: PlayerFacade, private pictures: PictureFacade) {}
 
   init(): void {
     if ('mediaSession' in navigator) {
@@ -45,7 +42,7 @@ export class MediaSessionService {
 
   setMetadata(song: Song): void {
     if ('mediaSession' in navigator) {
-      this.library
+      this.pictures
         .getCover(song.pictureKey)
         .pipe(
           tap(
@@ -56,8 +53,8 @@ export class MediaSessionService {
                   artist: song.artist,
                   album: song.album,
                   artwork: cover ? [{ src: cover }] : [],
-                })),
-          ),
+                }))
+          )
         )
         .subscribe();
     }

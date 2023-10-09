@@ -25,6 +25,8 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-player',
@@ -100,13 +102,13 @@ import { MenuItem } from '@app/core/components/menu.component';
           <a
             *ngIf="song.artist"
             [routerLink]="['/artist', getHash(song.artist)]"
-            >{{ song.artist }}</a
+          >{{ song.artist }}</a
           >
           •
           <a
             *ngIf="song.album"
             [routerLink]="['/album', getHash(song.album)]"
-            >{{ song.album }}</a
+          >{{ song.album }}</a
           >
           • {{ song.year }}
         </span>
@@ -336,8 +338,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private router: Router,
     private library: LibraryFacade,
     private player: PlayerFacade,
+    private pictures: PictureFacade,
+    private songs: SongFacade,
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   @HostListener('mouseleave')
@@ -353,7 +357,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     const r1$ = this.router.events
       .pipe(
         filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd,
+          (event): event is NavigationEnd => event instanceof NavigationEnd
         ),
         // filter((event) => event.snapshot.outlet === 'primary'),
         // tap(
@@ -361,9 +365,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
         // ),
         tap(
           (event) =>
-            (this.isPlayRoute = event.urlAfterRedirects.startsWith('/play')),
+            (this.isPlayRoute = event.urlAfterRedirects.startsWith('/play'))
         ),
-        tap(() => this.cdr.markForCheck()),
+        tap(() => this.cdr.markForCheck())
       )
       .subscribe();
 
@@ -377,13 +381,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.value$ = merge(
       of(true),
       input$.pipe(mapTo(false)),
-      change$.pipe(mapTo(true)),
+      change$.pipe(mapTo(true))
     ).pipe(
       switchMap((doUpdate) =>
         doUpdate
           ? this.player.getTimeUpdate$()
-          : input$.pipe(map((e) => e.value || 0)),
-      ),
+          : input$.pipe(map((e) => e.value || 0))
+      )
     );
 
     this.max$ = this.player.getDuration$();
@@ -404,7 +408,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
 
     this.currentSongCover$ = this.currentSong$.pipe(
-      switchMap((song) => this.library.getCover(song.pictureKey)),
+      switchMap((song) => this.pictures.getCover(song.pictureKey))
     );
   }
 
@@ -454,10 +458,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe(() => {
-      this.updateMenu(song);
-      this.cdr.markForCheck();
-    });
+    this.songs.toggleLiked(song);
+
+    // this.helper.toggleLikedSong(song).subscribe(() => {
+    //   this.updateMenu(song);
+    //   this.cdr.markForCheck();
+    // });
   }
 
   updateMenu(song: Song): void {
@@ -475,16 +481,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
         icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
-        click: () =>
-          this.helper.toggleLikedSong(song).subscribe(() => {
-            this.updateMenu(song);
-            this.cdr.markForCheck();
-          }),
+        click: () => this.toggleLiked(song),
       },
       {
         text: 'Add to playlist',
         icon: this.icons.playlistPlus,
-        click: () => this.helper.addSongsToPlaylist([song]).subscribe(),
+        click: () => this.helper.addSongsToPlaylist([song]),
       },
       {
         text: 'Remove from queue',
