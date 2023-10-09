@@ -4,7 +4,7 @@ export type FileEntry = {
   kind: 'file';
   name: string;
   path: string;
-  parent?: string;
+  parent: string;
   handle: FileSystemFileHandle;
 };
 

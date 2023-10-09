@@ -18,40 +18,24 @@ export const selectError = createSelector(
   (state) => state.error
 );
 
-export const selectStep = createSelector(
+export const selectLabel = createSelector(
   selectCoreState,
-  (state) => state.step
+  (state) => state.label
 );
 
-export const selectStepSub = createSelector(
-  selectCoreState,
-  (state) => state.stepSub
+export const selectProgress = createSelector(selectCoreState, (state) =>
+  Math.floor((state.extractedCount / state.scannedCount) * 100)
 );
 
-export const selectProgress = createSelector(
+export const selectScannedCount = createSelector(
   selectCoreState,
-  (state) => state.progress
+  (state) => state.scannedCount
 );
 
-export const selectProgressDisplay = createSelector(
+export const selectExtractedCount = createSelector(
   selectCoreState,
-  (state) => state.progressDisplay
+  (state) => state.extractedCount
 );
-
-export const selectProgressDisplaySub = createSelector(
-  selectCoreState,
-  (state) => state.progressDisplaySub
-);
-
-// export const selectScannedCount = createSelector(
-//   selectCoreState,
-//   (state) => state.scannedCount
-// );
-//
-// export const selectExtractedCount = createSelector(
-//   selectCoreState,
-//   (state) => state.extractedCount
-// );
 
 // export const selectProgressRatio = createSelector(
 //   selectScannedCount,

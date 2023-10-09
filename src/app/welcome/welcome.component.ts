@@ -5,10 +5,12 @@ import {
   TemplateRef,
   OnInit,
 } from '@angular/core';
-import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { MatDialog } from '@angular/material/dialog';
 import { tap } from 'rxjs/operators';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
 
 @Component({
   selector: 'app-welcome',
@@ -18,8 +20,8 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
       <div class="action">
         <app-title>TuneWave</app-title>
         <p>
-          Welcome to TuneWave! TuneWave is a serverless audio player for your
-          music library right in your browser. Try it now!
+          Welcome to TuneWave! TuneWave is a serverless audio player for
+          your music library right in your browser. Try it now!
         </p>
         <button [mat-dialog-close]="true" mat-raised-button color="accent">
           SCAN MY MUSIC LIBRARY
@@ -52,10 +54,10 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        /*padding: 2rem;*/
-        /*background-color: #212121;*/
-        /*border-radius: 8px;*/
-        /*max-width: 325px;*/
+        /* padding: 2rem;
+        background-color: #212121;
+        border-radius: 8px;
+        max-width: 325px;*/
         box-sizing: border-box;
       }
       p {
@@ -71,7 +73,11 @@ export class WelcomeComponent implements OnInit {
   @ViewChild('welcomeDialog', { static: true })
   welcomeDialog!: TemplateRef<any>;
 
-  constructor(private scanner: ScannerFacade, private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
     this.dialog
@@ -82,11 +88,20 @@ export class WelcomeComponent implements OnInit {
         disableClose: true,
       })
       .afterClosed()
-      .pipe(tap((res) => (res === true ? this.scan() : {})))
+      .pipe(
+        tap(
+          (res) =>
+            res &&
+            this.router.navigate(['/library']).then(() => {
+              this.store.dispatch(scanStart());
+              this.store.dispatch(openDirectory());
+            })
+        )
+      )
       .subscribe();
   }
 
   scan(): void {
-    this.scanner.openDirectory();
+    // this.scanner.openDirectory();
   }
 }

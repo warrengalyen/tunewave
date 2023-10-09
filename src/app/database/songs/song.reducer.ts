@@ -16,10 +16,10 @@ const indexes = [
   // { name: 'artists', multiEntry: true },
   // { name: 'genre', multiEntry: true },
   { name: 'title' },
-  { name: 'albumId' },
-  { name: 'artistId' },
+  { name: 'albumId', keySelector: (song: Song) => song.album.id },
+  // { name: 'artistId' },
   { name: 'likedOn' },
-  { name: 'lastModified' },
+  // { name: 'lastModified' },
   { name: 'updatedOn' },
 ] as const;
 
