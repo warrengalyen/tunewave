@@ -2,6 +2,8 @@ import { createAction, props } from '@ngrx/store';
 import { Song } from '@app/database/songs/song.model';
 import { Update } from '@warrengalyen/ngrx-idb';
 
+export const removeAllSongs = createAction('songs/remove-all');
+
 export const loadSongs = createAction('[Song] Load Songs');
 
 export const loadSongsSuccess = createAction(

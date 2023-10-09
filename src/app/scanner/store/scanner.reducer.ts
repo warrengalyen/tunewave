@@ -19,6 +19,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   // Step 2
   on(Actions.scanEntries, (state) => ({
     ...state,
+    // @ts-ignore
     state: 'scanning',
     step: 'Scanning...',
     stepSub: 'Please wait',
@@ -46,6 +47,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.scanEntriesFailure, (state, { error }) => ({
     ...state,
+    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -102,6 +104,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.extractEntriesFailure, (state, { error }) => ({
     ...state,
+    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -135,6 +138,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.buildAlbumsFailure, (state, { error }) => ({
     ...state,
+    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -167,6 +171,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
   on(Actions.buildArtistsFailure, (state, { error }) => ({
     ...state,
+    // @ts-ignore
     state: 'error',
     step: 'Error',
     stepSub: error?.message || error,
@@ -177,6 +182,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   // Final
   on(Actions.scanSuccess, (state) => ({
     ...state,
+    // @ts-ignore
     state: 'success',
     step: 'Library built',
     stepSub:
