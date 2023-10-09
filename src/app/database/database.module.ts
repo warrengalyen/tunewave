@@ -68,7 +68,7 @@ const tuneWaveDatabase: ReactiveIDBDatabaseOptions = {
         },
         {
           name: 'albums',
-          options: { keyPath: 'hash' },
+          options: { keyPath: 'id' },
           indexes: [
             'name',
             { name: 'artists', options: { multiEntry: true } },
