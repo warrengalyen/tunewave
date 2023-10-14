@@ -22,19 +22,23 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   // Step 2
   on(Actions.scanEntries, (state) => ({
     ...state,
+    // @ts-ignore
     state: 'scanning',
   })),
   on(Actions.saveEntry, (state) => ({
     ...state,
+      // @ts-ignore
     state: 'extracting',
     scannedCount: state.scannedCount + 1,
   })),
   on(Actions.scanEntriesSuccess, (state) => ({
     ...state,
+      // @ts-ignore
     state: 'extracting',
   })),
   on(Actions.scanEntriesFailure, (state, { error }) => ({
     ...state,
+      // @ts-ignore
     state: 'error', // TODO
     label: error?.message || error,
   })),

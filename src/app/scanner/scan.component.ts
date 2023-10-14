@@ -22,13 +22,11 @@ import { map } from 'rxjs/operators';
     <div class="container" *ngIf="scanner$ | async as scanner">
       <div class="progress">
         <mat-spinner
-          [diameter]="50"
-          [strokeWidth]="4"
-          [value]="
-            scanner.state === 'saving' ? scanner.saveProgress : scanner.progress
-          "
-          mode="determinate"
-          color="accent"
+            [diameter]="50"
+            [strokeWidth]="4"
+            [value]="scanner.progress"
+            mode="determinate"
+            color="accent"
         ></mat-spinner>
         <div class="label">
           <span class="progress-display">
@@ -55,7 +53,7 @@ import { map } from 'rxjs/operators';
       </div>
       <div class="labels">
         <p class="step">
-          {{ scanner.state }}...
+          {{ scanner.state | titlecase }}...
           <em>{{ scanner.extractedCount }}/{{ scanner.extractingCount }}</em>
           <em>{{ scanner.savedCount }}/{{ scanner.savingCount }}</em>
         </p>
@@ -66,18 +64,18 @@ import { map } from 'rxjs/operators';
 
       <div class="actions">
         <button
-          mat-raised-button
-          color="warn"
-          *ngIf="scanner.state === 'scanning' || scanner.state === 'extracting'"
-          (click)="abort()"
+            mat-raised-button
+            color="warn"
+            *ngIf="scanner.state === 'scanning' || scanner.state === 'extracting'"
+            (click)="abort()"
         >
           ABORT
         </button>
         <button
-          mat-raised-button
-          [color]="scanner.state === 'success' ? 'accent' : 'warn'"
-          *ngIf="scanner.state !== 'scanning' && scanner.state !== 'extracting'"
-          (click)="close()"
+            mat-raised-button
+            [color]="scanner.state === 'success' ? 'accent' : 'warn'"
+            *ngIf="scanner.state !== 'scanning' && scanner.state !== 'extracting'"
+            (click)="close()"
         >
           CLOSE
         </button>
@@ -177,7 +175,6 @@ export class ScanComponent {
     error?: any;
     label?: string;
     progress?: number;
-    saveProgress?: number;
     scannedCount: number;
     extractedCount: number;
     extractingCount: number;
@@ -200,12 +197,9 @@ export class ScanComponent {
         scanner.extractProgress$,
         scanner.saveProgress$,
       ]).pipe(
-        map(([extract, save]) =>
-          save > 0 ? Math.min(extract, save) : extract
-        ),
-        scan((acc, value) => (value > acc ? value : acc), 0)
+          map(([extract, save]) => (extract * 3 + save) / 4),
+          scan((acc, value) => (value > acc ? value : acc), 0)
       ),
-      saveProgress: scanner.saveProgress$,
       scannedCount: scanner.scannedCount$,
       extractedCount: scanner.extractedCount$,
       extractingCount: scanner.extractingCount$,
@@ -214,7 +208,7 @@ export class ScanComponent {
     };
 
     this.scanner$ = combineLatest(obs).pipe(
-      auditTime(1, animationFrameScheduler)
+        auditTime(1, animationFrameScheduler)
     );
   }
 
