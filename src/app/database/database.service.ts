@@ -24,7 +24,9 @@ export class DatabaseService {
 
   constructor(
     @Inject(Database('tunewave')) private databaseService: IndexedDBService
-  ) {}
+  ) {
+    databaseService.database.subscribe();
+  }
 
   open$(
     stores: string[],
