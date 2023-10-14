@@ -37,13 +37,3 @@ export const selectExtractedCount = createSelector(
   (state) => state.extractedCount
 );
 
-// export const selectProgressRatio = createSelector(
-//   selectScannedCount,
-//   selectExtractedCount,
-//   (scannedCount, extractedCount) =>
-//     scannedCount === 0 ? 0 : extractedCount / scannedCount
-// );
-//
-// export const selectProgress = createSelector(selectProgressRatio, (ratio) =>
-//   Math.ceil(ratio * 100)
-// );

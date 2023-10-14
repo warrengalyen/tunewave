@@ -47,7 +47,7 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   // })),
   on(Actions.extractEntrySuccess, (state, { label }) => ({
     ...state,
-    label,
+    label: label ?? state.label,
     extractedCount: state.extractedCount + 1,
   })),
   on(Actions.extractEntryFailure, (state) => ({
