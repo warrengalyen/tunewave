@@ -217,7 +217,7 @@ app-player > .mat-slider.front .mat-slider-track-background {
 }
 
 app-player > .mat-slider.back .mat-slider-track-background {
-  transform: translateX(0) scale3d(1, 1, 1) !important;
+  transform: translateX(0) scale(1) !important;
 }
 
 app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
