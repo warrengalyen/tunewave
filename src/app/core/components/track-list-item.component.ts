@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -45,7 +38,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
         #trigger="matMenuTrigger"
         [matMenuTriggerFor]="menu"
         [matMenuTriggerData]="{ song: song }"
-        (click)="menuOpened.emit(trigger); $event.stopPropagation()"
+        (click)="$event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
@@ -143,8 +136,6 @@ export class TrackListItemComponent {
 
   @Input() trackNumber!: number | null;
 
-  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
-
   icons = Icons;
 
   constructor(
@@ -152,7 +143,6 @@ export class TrackListItemComponent {
     private helper: ComponentHelperService,
     private songs: SongFacade
   ) {}
-
 
   toggleLiked(song: Song): void {
     this.songs.toggleLiked(song);
