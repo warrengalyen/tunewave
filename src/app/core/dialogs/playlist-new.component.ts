@@ -144,13 +144,13 @@ export class PlaylistNewComponent {
   createPlaylist(): void {
     if (this.form.valid) {
       const f = this.form.getRawValue();
-      const playlist: Playlist = {
-        songs: [],
-        createdOn: new Date().getTime(),
-        id: getPlaylistId(f.title),
-        ...f,
-      };
-      this.playlists.create(playlist);
+      // const playlist: Playlist = {
+      //   songs: [],
+      //   createdOn: new Date().getTime(),
+      //   id: getPlaylistId(f.title),
+      //   ...f,
+      // };
+      // this.playlists.create(playlist);
       this.dialog.close();
     }
   }
