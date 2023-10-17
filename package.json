@@ -53,7 +53,7 @@
     "@compodoc/compodoc": "^1.1.21",
     "@types/jasmine": "~4.3.0",
     "@ngrx/schematics": "^16.3.0",
-    "@types/node": "^20.5.9",
+    "@types/node": "^12.11.1",
     "@types/offscreencanvas": "^2019.7.1",
     "@types/web": "^0.0.117",
     "@types/wicg-file-system-access": "^2020.9.6",
