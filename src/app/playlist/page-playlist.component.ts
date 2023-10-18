@@ -9,7 +9,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 
 @Component({
@@ -57,34 +57,34 @@ import { MenuItem } from '@app/core/components/menu.component';
                 <span>Edit playlist</span>
               </button>-->
                 <button
-                  mat-raised-button
-                  class="play-button"
-                  color="accent"
-                  (click)="shufflePlay(playlist)"
+                    mat-raised-button
+                    class="play-button"
+                    color="accent"
+                    (click)="shufflePlay(playlist)"
                 >
                   <app-icon [path]="icons.shuffle"></app-icon>
                   <span>Shuffle</span>
                 </button>
                 <button
-                  mat-stroked-button
-                  class="shuffle-button"
-                  color="accent"
-                  (click)="toggleLiked(playlist)"
+                    mat-stroked-button
+                    class="shuffle-button"
+                    color="accent"
+                    (click)="toggleLiked(playlist)"
                 >
                   <app-icon
-                    [path]="
+                      [path]="
                       !!playlist.likedOn ? icons.heart : icons.heartOutline
                     "
                   ></app-icon>
                   <span>{{
                     !!playlist.likedOn
-                      ? 'Remove from your likes'
-                      : 'Add to your likes'
-                  }}</span>
+                        ? 'Remove from your likes'
+                        : 'Add to your likes'
+                    }}</span>
                 </button>
                 <app-menu
-                  [disableRipple]="true"
-                  [menuItems]="menuItems$ | async"
+                    [disableRipple]="true"
+                    [menuItems]="menuItems$ | async"
                 ></app-menu>
               </ng-container>
             </ng-container>
@@ -137,54 +137,59 @@ export class PagePlaylistComponent implements OnInit {
   icons = Icons;
 
   constructor(
-    private route: ActivatedRoute,
-    private player: PlayerFacade,
-    private pictures: PictureFacade,
-    private playlists: PlaylistFacade,
-    private songs: SongFacade,
-    private helper: HelperFacade
+      private route: ActivatedRoute,
+      private player: PlayerFacade,
+      private pictures: PictureFacade,
+      private playlists: PlaylistFacade,
+      private songs: SongFacade,
+      private helper: HelperFacade
   ) {}
 
   ngOnInit(): void {
     const playlistKey = this.route.snapshot.data.info as PlaylistId;
 
-    this.playlist$ = this.playlists.getByKey(
-      playlistKey
-    ) as Observable<Playlist>;
+    this.playlist$ = this.playlists
+        .getByKey(playlistKey)
+        .pipe(filter((playlist): playlist is Playlist => !!playlist));
 
     this.cover$ = this.playlist$.pipe(
-      switchMap((playlist) => this.pictures.getCover(playlist.pictureKey))
+        switchMap((playlist) => this.pictures.getCover(playlist.pictureKey))
     );
 
     this.color$ = of('red');
 
     this.songs$ = this.playlist$.pipe(
-      switchMap((playlist) => this.songs.getByKeys(playlist.songs))
+        switchMap((playlist) => this.songs.getByKeys(playlist.songs))
     );
 
     this.menuItems$ = this.playlist$.pipe(
-      map((playlist) => [
-        {
-          text: 'Shuffle play',
-          icon: this.icons.shuffle,
-          click: () => this.helper.playPlaylist(playlist.id, true),
-        },
-        {
-          text: 'Play next',
-          icon: this.icons.playlistPlay,
-          click: () => this.helper.addPlaylistToQueue(playlist.id, true),
-        },
-        {
-          text: 'Add to queue',
-          icon: this.icons.playlistMusic,
-          click: () => this.helper.addPlaylistToQueue(playlist.id),
-        },
-        {
-          text: 'Add to playlist',
-          icon: this.icons.playlistPlus,
-          click: () => this.helper.addPlaylistToPlaylist(playlist.id),
-        },
-      ])
+        map((playlist) => [
+          {
+            text: 'Play next',
+            icon: this.icons.playlistPlay,
+            click: () => this.helper.addPlaylistToQueue(playlist.id, true),
+          },
+          {
+            text: 'Add to queue',
+            icon: this.icons.playlistMusic,
+            click: () => this.helper.addPlaylistToQueue(playlist.id),
+          },
+          {
+            text: 'Add to playlist',
+            icon: this.icons.playlistPlus,
+            click: () => this.helper.addPlaylistToPlaylist(playlist.id),
+          },
+          {
+            text: 'Edit playlist',
+            icon: this.icons.playlistEdit,
+            click: () => this.helper.editPlaylist(playlist.id),
+          },
+          {
+            text: 'Delete playlist',
+            icon: this.icons.delete,
+            click: () => this.helper.deletePlaylist(playlist.id),
+          },
+        ])
     );
 
     // this.songs$ = this.info$.pipe(
