@@ -4,7 +4,7 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
@@ -17,18 +17,18 @@ import { HelperFacade } from '@app/helper/helper.facade';
   template: `
     <div class="cover">
       <img
-        *ngIf="cover$ | async as cover; else icon"
-        [src]="cover"
-        alt="cover"
+          *ngIf="cover$ | async as cover; else icon"
+          [src]="cover"
+          alt="cover"
       />
       <ng-template #icon>
         <app-icon [path]="icons.fileMusic" [size]="24"></app-icon>
       </ng-template>
       <app-player-button
-        size="small"
-        [song]="song"
-        [playlist]="playlist"
-        *ngIf="song && playlist"
+          size="small"
+          [queue]="queue"
+          [index]="queue.indexOf(song.entryPath)"
+          *ngIf="queue"
       ></app-player-button>
     </div>
     <span class="title">{{ song.title }}</span>
@@ -45,31 +45,31 @@ import { HelperFacade } from '@app/helper/helper.facade';
     </span>
     <span class="controls">
       <button
-        [class.liked]="!!song.likedOn"
-        mat-icon-button
-        [disableRipple]="true"
-        (click)="toggleLiked(song)"
+          [class.liked]="!!song.likedOn"
+          mat-icon-button
+          [disableRipple]="true"
+          (click)="toggleLiked(song)"
       >
         <app-icon
-          [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
         ></app-icon>
       </button>
       <button
-        class="trigger"
-        aria-label="Other actions"
-        title="Other actions"
-        mat-icon-button
-        [disableRipple]="true"
-        #trigger="matMenuTrigger"
-        [matMenuTriggerFor]="menu"
-        [matMenuTriggerData]="{ song: song }"
-        (click)="$event.stopPropagation()"
+          class="trigger"
+          aria-label="Other actions"
+          title="Other actions"
+          mat-icon-button
+          [disableRipple]="true"
+          #trigger="matMenuTrigger"
+          [matMenuTriggerFor]="menu"
+          [matMenuTriggerData]="{ song: song }"
+          (click)="$event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
     </span>
     <span class="duration">{{ song.duration | duration }}</span>
-    <mat-menu #menu="matMenu" [hasBackdrop]="false" [overlapTrigger]="false">
+    <mat-menu #menu="matMenu" [overlapTrigger]="true">
       <ng-template matMenuContent>
         <button mat-menu-item (click)="playNext(song)">
           <app-icon [path]="icons.playlistPlay"></app-icon>
@@ -88,8 +88,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
           <span>Go to album</span>
         </button>
         <button
-          mat-menu-item
-          [routerLink]="['/', 'artist', song.artists[0].id]"
+            mat-menu-item
+            [routerLink]="['/', 'artist', song.artists[0].id]"
         >
           <app-icon [path]="icons.accountMusic"></app-icon>
           <span>Go to artist</span>
@@ -108,17 +108,17 @@ import { HelperFacade } from '@app/helper/helper.facade';
       .cover {
         width: 32px;
         margin-right: 16px;
-        border-radius: 2px;
         overflow: hidden;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        border-radius: 2px;
       }
       .cover app-player-button {
         position: absolute;
-        top: -4px;
-        left: -4px;
+        /*top: -4px;*/
+        /*left: -4px;*/
         opacity: 0;
         background-color: rgba(0, 0, 0, 0.75);
       }
@@ -182,16 +182,16 @@ import { HelperFacade } from '@app/helper/helper.facade';
 })
 export class SongListItemComponent implements OnInit {
   @Input() song!: Song;
-  @Input() playlist!: Song[];
+  @Input() queue!: SongId[];
 
   cover$!: Observable<string | undefined>;
 
   icons = Icons;
 
   constructor(
-    private helper: HelperFacade,
-    private pictures: PictureFacade,
-    private songs: SongFacade
+      private helper: HelperFacade,
+      private pictures: PictureFacade,
+      private songs: SongFacade
   ) {}
 
   ngOnInit(): void {
@@ -207,14 +207,14 @@ export class SongListItemComponent implements OnInit {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song, true);
+    this.helper.addSongToQueue(song.entryPath, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song, false);
+    this.helper.addSongToQueue(song.entryPath, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]);
+    this.helper.addSongsToPlaylist([song.entryPath]);
   }
 }

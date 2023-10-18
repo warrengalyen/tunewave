@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -11,34 +11,34 @@ import { HelperFacade } from '@app/helper/helper.facade';
     <span class="index">
       <span>{{ trackNumber || '-' }}</span>
       <app-player-button
-        class="player-button"
-        size="small"
-        [song]="song"
-        [playlist]="playlist"
+          class="player-button"
+          size="small"
+          [index]="queue.indexOf(song.entryPath)"
+          [queue]="queue"
       ></app-player-button>
     </span>
     <span class="title">{{ song.title }}</span>
     <span class="controls">
       <button
-        [class.liked]="!!song.likedOn"
-        mat-icon-button
-        [disableRipple]="true"
-        (click)="toggleLiked(song)"
+          [class.liked]="!!song.likedOn"
+          mat-icon-button
+          [disableRipple]="true"
+          (click)="toggleLiked(song)"
       >
         <app-icon
-          [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
         ></app-icon>
       </button>
       <button
-        class="trigger"
-        aria-label="Other actions"
-        title="Other actions"
-        mat-icon-button
-        [disableRipple]="true"
-        #trigger="matMenuTrigger"
-        [matMenuTriggerFor]="menu"
-        [matMenuTriggerData]="{ song: song }"
-        (click)="$event.stopPropagation()"
+          class="trigger"
+          aria-label="Other actions"
+          title="Other actions"
+          mat-icon-button
+          [disableRipple]="true"
+          #trigger="matMenuTrigger"
+          [matMenuTriggerFor]="menu"
+          [matMenuTriggerData]="{ song: song }"
+          (click)="$event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
@@ -132,16 +132,16 @@ import { HelperFacade } from '@app/helper/helper.facade';
 })
 export class TrackListItemComponent {
   @Input() song!: Song;
-  @Input() playlist!: Song[];
+  @Input() queue!: SongId[];
 
   @Input() trackNumber!: number | null;
 
   icons = Icons;
 
   constructor(
-    private player: PlayerFacade,
-    private helper: HelperFacade,
-    private songs: SongFacade
+      private player: PlayerFacade,
+      private helper: HelperFacade,
+      private songs: SongFacade
   ) {}
 
   toggleLiked(song: Song): void {
@@ -149,14 +149,14 @@ export class TrackListItemComponent {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song, true);
+    this.helper.addSongToQueue(song.entryPath, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song, false);
+    this.helper.addSongToQueue(song.entryPath, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]);
+    this.helper.addSongsToPlaylist([song.entryPath]);
   }
 }

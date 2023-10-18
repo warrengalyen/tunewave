@@ -1,51 +1,51 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   HostBinding,
   Input,
   OnInit,
   Output,
-  EventEmitter,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { first, map, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { combineLatest, Observable, of } from 'rxjs';
-import { arrayEquals } from '@app/core/utils/array-equals.util';
+import { arrayEqualsUnordered } from '@app/core/utils/array-equals.util';
 
 // https://github.com/angular/angular/issues/8785
 @Component({
   selector: 'app-player-button',
   template: `
     <button
-      mat-icon-button
-      [ngClass]="[size, shape]"
-      [class.playing]="isPlaying$ | async"
-      (click)="toggle()"
-      [disabled]="(isLoading$ | async) === true"
+        mat-icon-button
+        [ngClass]="[size, shape]"
+        [class.playing]="isPlaying$ | async"
+        (click)="toggle()"
+        [disabled]="(isLoading$ | async) === true"
     >
       <ng-container *ngIf="(isLoading$ | async) === false">
         <app-icon
-          class="play-pause"
-          [path]="(isPlaying$ | async) === false ? icons.play : icons.pause"
-          [size]="size === 'large' ? 48 : 24"
+            class="play-pause"
+            [path]="(isPlaying$ | async) === false ? icons.play : icons.pause"
+            [size]="size === 'large' ? 48 : 24"
         ></app-icon>
         <app-icon
-          class="volume"
-          *ngIf="(isPlaying$ | async) === true"
-          [path]="icons.volumeHigh"
-          [size]="size === 'large' ? 48 : 24"
+            class="volume"
+            *ngIf="(isPlaying$ | async) === true"
+            [path]="icons.volumeHigh"
+            [size]="size === 'large' ? 48 : 24"
         ></app-icon>
       </ng-container>
     </button>
     <ng-container *ngIf="(isLoading$ | async) === true">
       <mat-spinner
-        [class.outside]="spinnerPosition === 'outside'"
-        [diameter]="
+          [class.outside]="spinnerPosition === 'outside'"
+          [diameter]="
           (size === 'large' ? 70 : 28) + (spinnerPosition === 'outside' ? 8 : 0)
         "
-        strokeWidth="2"
+          strokeWidth="2"
       ></mat-spinner>
     </ng-container>
   `,
@@ -107,10 +107,10 @@ import { arrayEquals } from '@app/core/utils/array-equals.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerButtonComponent implements OnInit {
-  @Input() song!: Song;
-  @Input() playlist!: Song[];
+  @Input() index = 0;
+  @Input() queue!: SongId[] | null;
 
-  @Input() playlistMode = false;
+  @Input() currentIfMatchAllQueue = false;
 
   @Input()
   shape: 'round' | 'square' = 'round';
@@ -134,57 +134,63 @@ export class PlayerButtonComponent implements OnInit {
   constructor(private player: PlayerFacade) {}
 
   ngOnInit(): void {
-    this.isCurrent$ = this.playlistMode
-      ? this.player.getPlaylist$().pipe(
-        map((playlist) =>
-          arrayEquals(
-            playlist,
-            this.playlist.map((s) => s.entryPath)
-          )
-        )
-      )
-      : this.player
-        .getCurrentSong$()
-        .pipe(map((current) => current === this.song.entryPath));
+    this.isCurrent$ = this.currentIfMatchAllQueue
+        ? this.player
+            .getQueue$()
+            .pipe(
+                map(
+                    (queue) =>
+                        !!(this.queue && arrayEqualsUnordered(queue, this.queue))
+                )
+            )
+        : this.player
+            .getCurrentSong$()
+            .pipe(
+                map(
+                    (current) =>
+                        !!(
+                            this.queue &&
+                            this.queue.length > 0 &&
+                            current === this.queue[this.index]
+                        )
+                )
+            );
 
     this.isPlaying$ = this.isCurrent$.pipe(
-      switchMap((current) => (current ? this.player.getPlaying$() : of(false))),
-      tap((playing) => (this.stopped = !playing))
+        switchMap((current) => (current ? this.player.getPlaying$() : of(false))),
+        tap((playing) => (this.stopped = !playing))
     );
 
     this.isLoading$ = this.isCurrent$.pipe(
-      switchMap((current) =>
-        current
-          ? this.player
-            .getLoading$()
-            .pipe(throttleTime(50, undefined, { trailing: true }))
-          : of(false)
-      )
+        switchMap((current) =>
+            current
+                ? this.player
+                    .getLoading$()
+                    .pipe(throttleTime(50, undefined, { trailing: true }))
+                : of(false)
+        )
     );
   }
 
   toggle(): void {
     combineLatest([this.isCurrent$, this.isPlaying$])
-      .pipe(
-        first(),
-        tap(([isCurrent, isPlaying]) => {
-          if (isCurrent) {
-            if (isPlaying) {
-              this.player.pause();
-            } else {
-              this.player.resume();
-            }
-          } else {
-            this.player.setPlaying();
-            this.player.setQueue(
-              this.playlist.map((s) => s.entryPath),
-              this.playlist.indexOf(this.song)
-            );
-            this.player.show();
-            this.playlistPlayed.emit();
-          }
-        })
-      )
-      .subscribe();
+        .pipe(
+            first(),
+            tap(([isCurrent, isPlaying]) => {
+              if (isCurrent) {
+                if (isPlaying) {
+                  this.player.pause();
+                } else {
+                  this.player.resume();
+                }
+              } else {
+                this.player.setPlaying();
+                this.player.setQueue(this.queue || [], this.index);
+                this.player.show();
+                this.playlistPlayed.emit();
+              }
+            })
+        )
+        .subscribe();
   }
 }

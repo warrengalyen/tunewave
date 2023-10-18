@@ -7,35 +7,35 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 
 @Component({
   selector: 'app-cover',
   template: `
     <app-player-button
-      cdkMonitorSubtreeFocus
-      size="small"
-      [song]="song"
-      [playlist]="playlist"
-      [playlistMode]="true"
-      (playlistPlayed)="playlistPlayed.emit()"
-      spinnerPosition="outside"
-      *ngIf="song && playlist"
+        cdkMonitorSubtreeFocus
+        size="small"
+        [index]="startIndex"
+        [queue]="queue"
+        [currentIfMatchAllQueue]="true"
+        (playlistPlayed)="playlistPlayed.emit()"
+        spinnerPosition="outside"
+        *ngIf="queue && queue.length > 0"
     ></app-player-button>
     <app-menu
-      cdkMonitorSubtreeFocus
-      [triggerIcon]="menuTriggerIcon"
-      [menuItems]="menuItems"
-      rippleColor="rgba(0,0,0,0.2)"
+        cdkMonitorSubtreeFocus
+        [triggerIcon]="menuTriggerIcon"
+        [menuItems]="menuItems"
+        rippleColor="rgba(0,0,0,0.2)"
     >
     </app-menu>
     <a
-      matRipple
-      class="link"
-      [title]="title"
-      [routerLink]="coverRouterLink"
-      tabindex="-1"
-      style="--aspect-ratio:1"
+        matRipple
+        class="link"
+        [title]="title"
+        [routerLink]="coverRouterLink"
+        tabindex="-1"
+        style="--aspect-ratio:1"
     >
       <div class="content">
         <ng-content></ng-content>
@@ -75,7 +75,7 @@ import { Song } from '@app/database/songs/song.model';
         bottom: 16px;
         z-index: 1;
         transition: transform 0.2s ease, opacity 0.2s ease,
-          background-color 0.2s ease;
+        background-color 0.2s ease;
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.75);
       }
@@ -107,10 +107,10 @@ import { Song } from '@app/database/songs/song.model';
         bottom: 0;
         left: 0;
         background: linear-gradient(
-          to bottom,
-          rgba(0, 0, 0, 0.5),
-          transparent 50%,
-          transparent
+            to bottom,
+            rgba(0, 0, 0, 0.5),
+            transparent 50%,
+            transparent
         );
         transition: opacity 0.2s ease;
       }
@@ -131,8 +131,8 @@ import { Song } from '@app/database/songs/song.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverComponent {
-  @Input() song!: Song | null | undefined;
-  @Input() playlist!: Song[] | null | undefined;
+  @Input() startIndex = 0;
+  @Input() queue!: SongId[] | null;
   @Input() title!: string;
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[] | null;

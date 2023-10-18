@@ -1,18 +1,17 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-song-list',
   template: `
     <app-song-list-item
-      *ngFor="let song of songs; trackBy: trackBy"
-      [song]="song"
-      [playlist]="songs"
-      cdkMonitorSubtreeFocus
-      [class.selected]="(currentSongPath$ | async) === song.entryPath"
+        *ngFor="let song of songs; trackBy: trackBy"
+        [song]="song"
+        [queue]="getIds(songs)"
+        cdkMonitorSubtreeFocus
+        [class.selected]="(currentSongPath$ | async) === song.entryPath"
     ></app-song-list-item>
   `,
   styles: [
@@ -39,13 +38,15 @@ export class SongListComponent {
 
   icons = Icons;
 
-  currentSongPath$ = this.player
-    .getCurrentSong$()
-    .pipe(map((entryPath) => entryPath));
+  currentSongPath$ = this.player.getCurrentSong$();
 
   constructor(private player: PlayerFacade) {}
 
   trackBy(index: number, song: Song): string {
     return song.entryPath;
+  }
+
+  getIds(songs: Song[]): SongId[] {
+    return songs.map((s) => s.entryPath);
   }
 }
