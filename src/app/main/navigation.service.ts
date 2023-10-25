@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { filter, map, tap } from 'rxjs/operators';
+import { catchError, filter, map, tap } from 'rxjs/operators';
+import { concatTap, tapError } from '@app/core/utils';
+import { from } from 'rxjs';
 
 @Injectable()
 export class NavigationService {
-  libraryPage?: 'playlists' | 'albums' | 'songs' | 'artists' | 'likes';
+  page?: string;
 
-  regexp = /\/library\/(?<page>.+)(\/.+)*(#.+)/;
+  regexp = /\/library\/(?<page>.+)/;
 
   constructor(private router: Router) {}
 
@@ -17,11 +19,11 @@ export class NavigationService {
           (event): event is NavigationStart => event instanceof NavigationStart
         ),
         filter((event) => event.url === '/library'),
-        tap(() =>
-          this.router.navigate(['/library', this.libraryPage || 'playlists'], {
-            preserveFragment: true,
-          })
-        )
+        concatTap(() =>
+          from(this.router.navigateByUrl(`/library/${this.page || 'playlist'}`))
+        ),
+        tapError((err) => console.error(err)),
+        catchError(() => this.router.navigate(['/library', 'playlists']))
       )
       .subscribe();
 
@@ -32,7 +34,7 @@ export class NavigationService {
         ),
         filter((event) => this.regexp.test(event.url)),
         map((event) => this.regexp.exec(event.url)?.groups?.page),
-        tap((page) => (this.libraryPage = page as any))
+        tap((page) => (this.page = page))
       )
       .subscribe();
   }
