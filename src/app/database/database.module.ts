@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
-import { IndexedDBModule } from '@warrengalyen/ngx-idb';
+import { IndexedDBModule } from '@creasource/ngx-idb';
 import { DatabaseService } from '@app/database/database.service';
-import { ReactiveIDBDatabaseOptions } from '@warrengalyen/reactive-idb';
+import { ReactiveIDBDatabaseOptions } from '@creasource/reactive-idb';
 import { EffectsModule } from '@ngrx/effects';
 import { AlbumEffects } from '@app/database/albums/album.effects';
 import { ArtistEffects } from '@app/database/artists/artist.effects';

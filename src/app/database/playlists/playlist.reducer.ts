@@ -9,7 +9,7 @@ import {
   updatePlaylist,
 } from './playlist.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@warrengalyen/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 
 export const playlistFeatureKey = 'playlists';
 

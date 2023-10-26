@@ -11,7 +11,7 @@ import {
   selectSongIndexAll,
   selectSongTotal,
 } from '@app/database/songs/song.selectors';
-import { Update } from '@warrengalyen/ngrx-idb';
+import { Update } from '@creasource/ngrx-idb';
 import { updateSong } from '@app/database/songs/song.actions';
 import { map } from 'rxjs/operators';
 import { SongIndex } from '@app/database/songs/song.reducer';
