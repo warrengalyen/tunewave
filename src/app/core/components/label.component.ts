@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   HostBinding,
   Input,
+  Output,
 } from '@angular/core';
 
 export interface Link {
@@ -28,7 +30,11 @@ export type BottomLabel =
         {{ label.text }}
       </a>
       <ng-template #topText>
-        <span>{{ topLabel }}</span>
+        <span
+          (click)="topLabelClick.emit()"
+          [class.cursor]="topLabelClickable"
+        >{{ topLabel }}</span
+        >
       </ng-template>
     </p>
     <p class="bottom" [ngClass]="[size]">
@@ -38,7 +44,7 @@ export type BottomLabel =
             *ngIf="asLink(label); let label; else: labelText"
             [routerLink]="label.routerLink"
             (mousedown)="$event.stopPropagation()"
-            >{{ label.text }}</a
+          >{{ label.text }}</a
           >
           <ng-template #labelText>
             <span>{{ label }}</span>
@@ -88,12 +94,18 @@ export type BottomLabel =
       a:hover {
         text-decoration: underline;
       }
+      .cursor {
+        cursor: pointer;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LabelComponent {
   @Input() topLabel!: undefined | string | Link;
+  @Input() topLabelClickable = false;
+  @Output() topLabelClick = new EventEmitter<void>();
+
   @Input() bottomLabel?: BottomLabel;
   @Input() size: 'small' | 'large' = 'large';
 
@@ -105,8 +117,8 @@ export class LabelComponent {
     return Array.isArray(val)
       ? (val as Link[]).filter((a) => a)
       : val
-      ? [val]
-      : [];
+        ? [val]
+        : [];
   }
 
   asLink(val: undefined | string | Link): false | Link {
