@@ -1,56 +1,23 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { combineLatest, Observable, scan } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { Icons } from '@app/core/utils/icons.util';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-scan',
-  template: `
-    <!--    <ng-template
-      appRoutedDialog
-      outlet="dialog"
-      [config]="config"
-      #dialog="appRoutedDialog"
-    >-->
+    selector: 'app-scan',
+    template: `
     <div class="container" *ngIf="scanner$ | async as scanner">
       <div class="progress">
         <mat-spinner
-            [diameter]="50"
-            [strokeWidth]="4"
-            [value]="scanner.progress"
-            mode="determinate"
-            color="accent"
+          [diameter]="50"
+          [strokeWidth]="4"
+          mode="indeterminate"
+          color="accent"
         ></mat-spinner>
-        <div class="label">
-          <span class="progress-display">
-            {{ scanner.progress | number: '1.0-0' }}%
-          </span>
-          <!--          <span class="progress-display" *ngIf="scanner.state === 'extracting'">-->
-          <!--            {{ scanner.progress | number: '1.0-0' }}%-->
-          <!--          </span>-->
-          <!--          <span class="progress-display" *ngIf="scanner.state === 'scanning'">-->
-          <!--            - -->
-          <!--          </span>-->
-          <!--          <span class="progress-display-sub">-->
-          <!--            {{ scanner.progressDisplaySub }}-->
-          <!--          </span>-->
-        </div>
-        <!--        <ng-template #temp>-->
-        <!--          <div class="label" *ngIf="scanner.state === 'success'">-->
-        <!--            <app-icon [path]="icons.check" [size]="40"></app-icon>-->
-        <!--          </div>-->
-        <!--          <div class="label" *ngIf="scanner.state === 'error'">-->
-        <!--            <app-icon [path]="icons.close" [size]="40"></app-icon>-->
-        <!--          </div>-->
-        <!--        </ng-template>-->
       </div>
       <div class="labels">
-        <p class="step">
-          {{ scanner.state | titlecase }}...
-          <!--<em>{{ scanner.extractedCount }}/{{ scanner.extractingCount }}</em>
-          <em>{{ scanner.savedCount }}/{{ scanner.savingCount }}</em>-->
-        </p>
+        <p class="step">{{ scanner.state | titlecase }}...</p>
         <p class="step-sub">
           {{ scanner.label }}
         </p>
@@ -58,27 +25,18 @@ import { map } from 'rxjs/operators';
 
       <div class="actions">
         <button
-            mat-raised-button
-            color="warn"
-            *ngIf="scanner.state === 'scanning' || scanner.state === 'extracting'"
-            (click)="abort()"
+          mat-raised-button
+          color="warn"
+          *ngIf="scanner.state === 'scanning'"
+          (click)="abort()"
         >
           ABORT
         </button>
-        <button
-            mat-raised-button
-            [color]="scanner.state === 'success' ? 'accent' : 'warn'"
-            *ngIf="scanner.state !== 'scanning' && scanner.state !== 'extracting'"
-            (click)="close()"
-        >
-          CLOSE
-        </button>
       </div>
     </div>
-    <!--</ng-template>-->
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         width: 100%;
         background-color: #212121;
@@ -89,10 +47,6 @@ import { map } from 'rxjs/operators';
         flex-direction: row;
         align-items: center;
         padding: 16px;
-      }
-      .actions {
-        /*align-self: flex-end;
-        margin-left: auto;*/
       }
       .progress-display {
         font-size: 12px;
@@ -145,70 +99,28 @@ import { map } from 'rxjs/operators';
         flex-direction: column;
       }
     `,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanComponent {
-  // @ViewChild('dialog')
-  // dialog!: RoutedDialogDirective;
+    icons = Icons;
 
-  icons = Icons;
+    scanner$: Observable<{
+        state: 'idle' | 'scanning' | 'success' | 'error';
+        error: any;
+        label: string;
+    }>;
 
-  // config: MatDialogConfig = {
-  //   width: '90%',
-  //   maxWidth: '325px',
-  //   hasBackdrop: true,
-  //   disableClose: true,
-  //   scrollStrategy: new NoopScrollStrategy(),
-  //   closeOnNavigation: false,
-  //   panelClass: 'scan-dialog',
-  // };
+    constructor(private scanner: ScannerFacade) {
+        // @ts-ignore
+        this.scanner$ = combineLatest([
+            scanner.state$,
+            scanner.error$,
+            scanner.label$,
+        ]).pipe(map(([state, error, label]) => ({ state, error, label })));
+    }
 
-  scanner$: Observable<{
-    state?: 'idle' | 'scanning' | 'extracting' | 'saving' | 'success' | 'error';
-    error?: any;
-    label?: string;
-    progress?: number;
-    scannedCount: number;
-    extractedCount: number;
-    extractingCount: number;
-    savedCount: number;
-    savingCount: number;
-  }>;
-
-  constructor(private scanner: ScannerFacade) {
-    // const throttle = <T>() =>
-    //   throttleTime<T>(25, animationFrameScheduler, {
-    //     leading: true,
-    //     trailing: true,
-    //   });
-
-    const obs = {
-      state: scanner.state$,
-      error: scanner.error$,
-      label: scanner.label$,
-      progress: combineLatest([
-        scanner.extractProgress$,
-        scanner.saveProgress$,
-      ]).pipe(
-          map(([extract, save]) => (extract * 3 + save) / 4),
-          scan((acc, value) => (value > acc ? value : acc), 0)
-      ),
-      scannedCount: scanner.scannedCount$,
-      extractedCount: scanner.extractedCount$,
-      extractingCount: scanner.extractingCount$,
-      savedCount: scanner.savedCount$,
-      savingCount: scanner.savingCount$,
-    };
-
-    this.scanner$ = combineLatest(obs);
-  }
-
-  close(): void {
-    // this.dialogRef.close();
-  }
-
-  abort(): void {
-    this.scanner.abort();
-  }
+    abort(): void {
+        this.scanner.abort();
+    }
 }
