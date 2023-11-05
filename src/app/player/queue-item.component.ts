@@ -19,7 +19,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <img *ngIf="cover$ | async as cover" [src]="cover" alt="cover" />
       <app-player-button
         size="small"
-        [index]="index""
+        [index]="index"
         [queue]="queue"
       ></app-player-button>
     </div>
