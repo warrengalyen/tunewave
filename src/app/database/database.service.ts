@@ -21,7 +21,7 @@ export class DatabaseService {
   constructor(
     @Inject(Database('tunewave')) private databaseService: IndexedDBService
   ) {
-    databaseService.database.subscribe();
+    // databaseService.database.subscribe();
   }
   get db$(): Observable<ReactiveIDBDatabase> {
     return this.databaseService.database;
