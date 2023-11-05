@@ -9,9 +9,13 @@ import {
   selectAlbumIndexAll,
   selectAlbumTotal,
 } from '@app/database/albums/album.selectors';
-import { addAlbum, updateAlbum } from '@app/database/albums/album.actions';
+import {
+  addAlbum,
+  updateAlbum,
+  upsertAlbum,
+} from '@app/database/albums/album.actions';
 import { AlbumIndex } from '@app/database/albums/album.reducer';
-import { first, map, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { IdUpdate } from '@app/core/utils';
 import { ArtistId } from '@app/database/artists/artist.model';
 import { DatabaseService } from '@app/database/database.service';
@@ -22,31 +26,33 @@ export class AlbumFacade {
 
   add(album: Album): Observable<IDBValidKey> {
     return this.database
-      .add$<Album>('albums', album)
-      .pipe(tap(() => this.store.dispatch(addAlbum({ album }))));
+        .add$<Album>('albums', album)
+        .pipe(tap(() => this.store.dispatch(addAlbum({ album }))));
   }
 
   put(album: Album): Observable<IDBValidKey> {
-    return this.store.select(selectAlbumByKey(album.id)).pipe(
-      first(),
-      tap((stored) => {
-        if (!stored) {
-          this.store.dispatch(addAlbum({ album }));
-        }
-      }),
-      concatMap((stored) => {
-        if (!stored) {
-          return this.database.add$<Album>('albums', album);
-        } else {
-          const albumN = {
-            ...stored,
-            artists: [...stored.artists, ...album.artists].filter(
-              (value, i, arr) => arr.indexOf(value) === i
-            ),
-          };
-          return this.database.put$<Album>('albums', albumN);
-        }
-      })
+    const uniq = <T>(value: T, i: number, arr: T[]) => arr.indexOf(value) === i;
+
+    return this.database.db$.pipe(
+        concatMap((db) => db.transaction$('albums', 'readwrite')),
+        concatMap((transaction) => transaction.objectStore$<Album>('albums')),
+        concatMap((store) =>
+            store.get$(album.id).pipe(
+                map((stored) =>
+                    stored
+                        ? {
+                          ...stored,
+                          artists: [...stored.artists, ...album.artists].filter(uniq),
+                        }
+                        : album
+                ),
+                concatMap((updated) =>
+                    store
+                        .put$(updated)
+                        .pipe(tap(() => this.store.dispatch(upsertAlbum({ album }))))
+                )
+            )
+        )
     );
   }
 
@@ -56,14 +62,14 @@ export class AlbumFacade {
 
   getByArtistKey(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
-      .select(selectAlbumByAlbumArtistKey(key))
-      .pipe(/*map((albums) => albums?.filter((a) => a.albumArtist.id === key))*/);
+        .select(selectAlbumByAlbumArtistKey(key))
+        .pipe(/*map((albums) => albums?.filter((a) => a.albumArtist.id === key))*/);
   }
 
   getWithArtist(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
-      .select(selectAlbumByArtistKey(key))
-      .pipe(map((albums) => albums?.filter((a) => a.albumArtist.id !== key)));
+        .select(selectAlbumByArtistKey(key))
+        .pipe(map((albums) => albums?.filter((a) => a.albumArtist.id !== key)));
 
     // return this.storage
     //   .walk$<Album>(
