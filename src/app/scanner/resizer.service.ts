@@ -2,15 +2,14 @@ import { Injectable } from '@angular/core';
 import {
   concatMap,
   fromEvent,
-  merge,
   Observable,
   of,
   ReplaySubject,
   share,
   throwError,
-  toArray,
 } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { first, map, switchMap } from 'rxjs/operators';
+import { Picture } from '@app/database/pictures/picture.model';
 
 type Result = {
   height: number;
@@ -21,24 +20,23 @@ type Result = {
 @Injectable()
 export class ResizerService {
   readonly workers: Observable<Worker[]> = new Observable<Worker[]>(
-      (observer) => {
-        const workers = new Array(this.workerCount).fill(0).map(
-            () =>
-                new Worker(new URL('./resizer.worker', import.meta.url), {
-                  name: 'resizer',
-                })
-        );
-        console.log('Resizer workers created');
-        observer.next(workers);
-        return () => workers.forEach((worker) => worker.terminate());
-      }
+    (observer) => {
+      const workers = new Array(this.workerCount).fill(0).map(
+        () =>
+          new Worker(new URL('./resizer.worker', import.meta.url), {
+            name: 'resizer',
+          })
+      );
+      observer.next(workers);
+      return () => workers.forEach((worker) => worker.terminate());
+    }
   ).pipe(
-      share({
-        resetOnComplete: false,
-        resetOnRefCountZero: true,
-        resetOnError: false,
-        connector: () => new ReplaySubject(1),
-      })
+    share({
+      resetOnComplete: false,
+      resetOnRefCountZero: true,
+      resetOnError: false,
+      connector: () => new ReplaySubject(1),
+    })
   );
 
   private readonly workerCount = navigator.hardwareConcurrency;
@@ -65,45 +63,45 @@ export class ResizerService {
     // });
   }
 
-  resize(
-      blob: Blob,
-      sizes: { height: number; width?: number }[]
-  ): Observable<Result[]> {
-    return merge(...sizes.map((size) => this.resizeOne(blob, size))).pipe(
-        toArray()
-    );
-  }
+  // resize(
+  //   blob: Blob,
+  //   sizes: { height: number; width?: number }[]
+  // ): Observable<Result[]> {
+  //   return merge(...sizes.map((size) => this.resizeOne(blob, size))).pipe(
+  //     toArray()
+  //   );
+  // }
 
   resizeOne(
-      blob: Blob,
-      size: { height: number; width?: number }
+    picture: Picture,
+    size: { height: number; width?: number }
   ): Observable<Result> {
     return this.workers.pipe(
-        map((workers) => workers[Math.floor(Math.random() * this.workerCount)]),
-        map((worker) => {
-          const id = Math.random();
-          worker.postMessage({
-            id,
-            imageData: blob,
-            width: size.width ?? size.height,
-            height: size.height,
-          });
-          return [worker, id] as [Worker, number];
-        }),
-        concatMap(([worker, random]) =>
-            fromEvent<
-                MessageEvent<{
-                  id: number;
-                  result: any;
-                  error?: any;
-                }>
-            >(worker, 'message').pipe(first(({ data: { id } }) => id === random))
-        ),
-        first(),
-        map(({ data }) => data),
-        concatMap((result) =>
-            'error' in result ? throwError(() => result.error) : of(result.result)
-        )
+      map((workers) => workers[Math.floor(Math.random() * this.workerCount)]),
+      map((worker) => {
+        const id = Math.random();
+        worker.postMessage({
+          id,
+          picture,
+          height: size.height,
+          width: size.width ?? size.height,
+        });
+        return [worker, id] as [Worker, number];
+      }),
+      switchMap(([worker, random]) =>
+        fromEvent<
+          MessageEvent<{
+            id: number;
+            result: any;
+            error?: any;
+          }>
+        >(worker, 'message').pipe(first(({ data: { id } }) => id === random))
+      ),
+      first(),
+      map(({ data }) => data),
+      concatMap((result) =>
+        'error' in result ? throwError(() => result.error) : of(result.result)
+      )
     );
   }
 }
