@@ -28,17 +28,17 @@ import { SongIndex } from '@app/database/songs/song.reducer';
   selector: 'app-library-songs',
   template: `
     <app-library-content
-      [sortOptions]="sortOptions"
-      [selectedSortOption]="selectedSortOption"
+        [sortOptions]="sortOptions"
+        [selectedSortOption]="selectedSortOption"
     >
       <div class="songs">
         <div [style.height.px]="top$ | async" class="filler"></div>
         <ng-container *ngFor="let song of songs$ | async; trackBy: trackBy">
           <app-song-list-item
-            [song]="song"
-            [queue]="[song.entryPath]"
-            cdkMonitorSubtreeFocus
-            [class.selected]="(currentSongPath$ | async) === song.entryPath"
+              [song]="song"
+              [queue]="[song.id]"
+              cdkMonitorSubtreeFocus
+              [class.selected]="(currentSongPath$ | async) === song.id"
           ></app-song-list-item>
         </ng-container>
         <div [style.height.px]="bottom$ | async" class="filler"></div>
@@ -56,7 +56,7 @@ import { SongIndex } from '@app/database/songs/song.reducer';
         <!--              [playlist]="[song]"-->
         <!--              *ngIf="!sort.likes || !!song.likedOn"-->
         <!--              cdkMonitorSubtreeFocus-->
-        <!--              [class.selected]="(currentSongPath$ | async) === song.entryPath"-->
+        <!--              [class.selected]="(currentSongPath$ | async) === song.id"-->
         <!--            ></app-song-list-item>-->
         <!--          </ng-container>-->
         <!--          <p class="empty" *ngIf="i === 0">Nothing to display</p>-->
@@ -126,16 +126,16 @@ export class LibrarySongsComponent implements OnInit {
   // loadMore = false;
 
   currentSongPath$ = this.player.getCurrentSong$().pipe(
-    filter((id): id is SongId => !!id),
-    switchMap((path) => this.songs.getByKey(path)),
-    map((song) => song?.entryPath)
+      filter((id): id is SongId => !!id),
+      switchMap((path) => this.songs.getByKey(path)),
+      map((song) => song?.id)
   );
 
   constructor(
-    private route: ActivatedRoute,
-    private player: PlayerFacade,
-    private songs: SongFacade,
-    private scroller: ScrollerService
+      private route: ActivatedRoute,
+      private player: PlayerFacade,
+      private songs: SongFacade,
+      private scroller: ScrollerService
   ) {}
 
   ngOnInit(): void {
@@ -160,23 +160,23 @@ export class LibrarySongsComponent implements OnInit {
     // );
 
     const sort$ = this.route.queryParamMap.pipe(
-      map((params) => ({
-        index: params.get('sort') || 'updatedOn',
-        direction: ((params.get('dir') || 'desc') === 'asc'
-          ? 'next'
-          : 'prev') as IDBCursorDirection,
-      }))
+        map((params) => ({
+          index: params.get('sort') || 'updatedOn',
+          direction: ((params.get('dir') || 'desc') === 'asc'
+              ? 'next'
+              : 'prev') as IDBCursorDirection,
+        }))
     );
     const songs$ = sort$.pipe(
-      switchMap((sort) =>
-        this.songs
-          .getAll(sort.index as SongIndex)
-          .pipe(
-            map((songs) =>
-              sort.direction === 'next' ? songs : [...songs].reverse()
-            )
-          )
-      )
+        switchMap((sort) =>
+            this.songs
+                .getAll(sort.index as SongIndex)
+                .pipe(
+                    map((songs) =>
+                        sort.direction === 'next' ? songs : [...songs].reverse()
+                    )
+                )
+        )
     );
 
     const a$ = combineLatest([
@@ -184,41 +184,41 @@ export class LibrarySongsComponent implements OnInit {
       this.songs.getTotal(),
       songs$,
     ]).pipe(
-      // TODO compute available size
-      map(([scrollTop, total, all]) => {
-        scrollTop = Math.max(scrollTop - 387, 0);
+        // TODO compute available size
+        map(([scrollTop, total, all]) => {
+          scrollTop = Math.max(scrollTop - 387, 0);
 
-        const topCount = Math.max(
-          0,
-          Math.min(Math.floor(scrollTop / 49), total - 35)
-        );
-        const bottomCount = Math.max(0, total - 35 - topCount);
+          const topCount = Math.max(
+              0,
+              Math.min(Math.floor(scrollTop / 49), total - 35)
+          );
+          const bottomCount = Math.max(0, total - 35 - topCount);
 
-        const songs = all.slice(topCount, total - bottomCount);
+          const songs = all.slice(topCount, total - bottomCount);
 
-        return {
-          top: topCount * 49,
-          bottom: bottomCount * 49,
-          songs,
-        };
-      }),
-      share({
-        connector: () => new ReplaySubject(1),
-        resetOnRefCountZero: true,
-      })
+          return {
+            top: topCount * 49,
+            bottom: bottomCount * 49,
+            songs,
+          };
+        }),
+        share({
+          connector: () => new ReplaySubject(1),
+          resetOnRefCountZero: true,
+        })
     );
 
     this.top$ = a$.pipe(
-      map(({ top }) => top),
-      observeOn(animationFrameScheduler)
+        map(({ top }) => top),
+        observeOn(animationFrameScheduler)
     );
     this.bottom$ = a$.pipe(
-      map(({ bottom }) => bottom),
-      observeOn(animationFrameScheduler)
+        map(({ bottom }) => bottom),
+        observeOn(animationFrameScheduler)
     );
     this.songs$ = a$.pipe(
-      map(({ songs }) => songs),
-      observeOn(animationFrameScheduler)
+        map(({ songs }) => songs),
+        observeOn(animationFrameScheduler)
     );
   }
 
@@ -276,6 +276,6 @@ export class LibrarySongsComponent implements OnInit {
   // }
 
   trackBy(index: number, song: Song): string {
-    return song.entryPath;
+    return song.id;
   }
 }
