@@ -181,13 +181,12 @@ export class HelperEffects implements OnRunEffects {
                             result === null ? this.helper.newPlaylist() : of(result)
                         ),
                         filter((result): result is Playlist => !!result),
-                      concatTap((result) =>
-                        this.songs
-                          .getByKeys(songs)
-                          .pipe(
-                            tap((songModels) =>
-                              this.playlists.addSongsTo(result, songModels)
-                            )
+                          concatTap((result) =>
+                                  this.songs.getByKeys(songs).pipe(
+                                      first(),
+                                      tap((songModels) =>
+                                          this.playlists.addSongsTo(result, songModels)
+                              )
                           )
                       ),
                         map((result) =>
