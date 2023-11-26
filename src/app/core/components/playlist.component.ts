@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { Observable, of } from 'rxjs';
+import { concatMap, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -32,7 +32,7 @@ import { SongId } from '@app/database/songs/song.model';
           <div class="inner-cover" [style.backgroundColor]="color">
             <img [src]="cover" alt="cover" />
           </div>
-          <app-icon class="icon-cover" [path]="icons.playlistMusic"></app-icon>
+          <!--<app-icon class="icon-cover" [path]="icons.playlistMusic"></app-icon>-->
         </ng-container>
       </ng-container>
       <ng-template #icon>
@@ -115,8 +115,12 @@ export class PlaylistComponent implements OnInit {
   ngOnInit(): void {
     this.cover$ = this.pictures.getPlaylistCover(this.playlist, 160);
 
-    // TODO
-    this.color$ = of('rgba(0,0,0,0.66)');
+    this.color$ = this.pictures.getPlaylistCover(this.playlist, 56).pipe(
+      filter((cover): cover is string => !!cover),
+      concatMap((cover) => this.pictures.getCoverColor(cover)),
+      filter((rgb): rgb is [number, number, number] => !!rgb),
+      map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`)
+    );
 
     this.menuItems$ = this.playlists.getByKey(this.playlist.id).pipe(
       filter((playlist): playlist is Playlist => !!playlist),
