@@ -29,9 +29,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
           <div class="info">
             <div class="cover" style="--aspect-ratio:1">
               <img
-                  [src]="cover"
-                  alt="cover"
-                  *ngIf="cover$ | async as cover; else icon"
+                [src]="cover"
+                alt="cover"
+                *ngIf="cover$ | async as cover; else icon"
               />
               <ng-template #icon>
                 <app-icon [path]="icons.album" [fullWidth]="true"></app-icon>
@@ -63,14 +63,14 @@ import { HelperFacade } from '@app/helper/helper.facade';
             </button>
             <button mat-stroked-button (click)="toggleLiked(album)">
               <app-icon
-                  [path]="!!album.likedOn ? icons.heart : icons.heartOutline"
+                [path]="!!album.likedOn ? icons.heart : icons.heartOutline"
               ></app-icon>
               <span *ngIf="!album.likedOn">Add to your likes</span>
               <span *ngIf="!!album.likedOn">Remove from your likes</span>
             </button>
             <app-menu
-                [disableRipple]="true"
-                [menuItems]="menuItems$ | async"
+              [disableRipple]="true"
+              [menuItems]="menuItems$ | async"
             ></app-menu>
           </div>
         </app-container-page>
@@ -78,17 +78,17 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <app-container-page>
         <div class="track-list" *ngIf="disks$ | async as disks">
           <ng-container *ngFor="let disk of disks; trackBy: trackByDisk">
-            <app-title size="small" *ngIf="disks.length > 1">
+            <app-title size="small" *ngIf="disks.length > 1" class="disk-title">
               Disk {{ disk.key }}
             </app-title>
             <div class="track-list-container">
               <app-track-list-item
-                  *ngFor="let song of disk.songs; trackBy: trackBy"
-                  [song]="song"
-                  [queue]="getIds(disk.songs)"
-                  [trackNumber]="song.tags.track.no"
-                  [class.selected]="(currentSongPath$ | async) === song.id"
-                  cdkMonitorSubtreeFocus
+                *ngFor="let song of disk.songs; trackBy: trackBy"
+                [song]="song"
+                [queue]="getIds(disk.songs)"
+                [trackNumber]="song.tags.track.no"
+                [class.selected]="(currentSongPath$ | async) === song.id"
+                cdkMonitorSubtreeFocus
               ></app-track-list-item>
             </div>
           </ng-container>
@@ -108,10 +108,16 @@ import { HelperFacade } from '@app/helper/helper.facade';
       .track-list-container {
         display: flex;
         flex-direction: column;
-        margin-bottom: 1em;
+        margin-bottom: 2em;
+      }
+      .track-list-container:last-of-type {
+        margin-bottom: 0;
       }
       app-track-list-item.selected {
         background-color: rgba(255, 255, 255, 0.1);
+      }
+      .disk-title {
+        margin-bottom: 16px;
       }
     `,
   ],
@@ -125,16 +131,16 @@ export class PageAlbumComponent implements OnInit {
   stats$!: Observable<{ n: number; length: number }>;
 
   disks$!: Observable<
-      {
-        key: number | null;
-        songs: Song[];
-      }[]
+    {
+      key: number | null;
+      songs: Song[];
+    }[]
   >;
 
   currentSongPath$ = this.player.getCurrentSong$().pipe(
-      filter((id): id is SongId => !!id),
-      switchMap((path) => this.songs.getByKey(path)),
-      map((song) => song?.id)
+    filter((id): id is SongId => !!id),
+    switchMap((path) => this.songs.getByKey(path)),
+    map((song) => song?.id)
   );
 
   cover$!: Observable<string | undefined>;
@@ -144,12 +150,12 @@ export class PageAlbumComponent implements OnInit {
   icons = Icons;
 
   constructor(
-      private route: ActivatedRoute,
-      private player: PlayerFacade,
-      private helper: HelperFacade,
-      private albums: AlbumFacade,
-      private pictures: PictureFacade,
-      private songs: SongFacade
+    private route: ActivatedRoute,
+    private player: PlayerFacade,
+    private helper: HelperFacade,
+    private albums: AlbumFacade,
+    private pictures: PictureFacade,
+    private songs: SongFacade
   ) {}
 
   trackBy(index: number, song: Song): string {
@@ -164,73 +170,75 @@ export class PageAlbumComponent implements OnInit {
     const albumKey = this.route.snapshot.data.info as AlbumId;
 
     this.album$ = this.albums
-        .getByKey(albumKey)
-        .pipe(filter((a): a is Album => !!a));
+      .getByKey(albumKey)
+      .pipe(filter((a): a is Album => !!a));
 
     this.cover$ = this.album$.pipe(
-        switchMap((album) => this.pictures.getAlbumCover(album.id, 264))
+      switchMap((album) => this.pictures.getAlbumCover(album.id, 264))
     );
 
     this.songs$ = this.album$.pipe(
-        switchMap((album) => this.songs.getByAlbumKey(album.id)),
-        filter((songs): songs is Song[] => !!songs),
-        map((songs) =>
-            songs.sort((s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0))
-        ),
-        share({
-          connector: () => new ReplaySubject(1),
-          resetOnRefCountZero: true,
-        })
+      switchMap((album) => this.songs.getByAlbumKey(album.id)),
+      filter((songs): songs is Song[] => !!songs),
+      map((songs) =>
+        [...songs].sort(
+          (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0)
+        )
+      ),
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: true,
+      })
     );
 
     this.stats$ = this.songs$.pipe(
-        map((songs) => ({
-          length: this.getLength(songs),
-          n: songs.length,
-        }))
+      map((songs) => ({
+        length: this.getLength(songs),
+        n: songs.length,
+      }))
     );
 
     this.disks$ = this.songs$.pipe(
-        switchMap((s) =>
-            of(...s).pipe(
-                groupBy((song) => song.tags.disk.no),
-                mergeMap((group$) =>
-                    group$.pipe(
-                        reduce((acc, cur) => [...acc, cur], [] as Song[]),
-                        map((songs) => ({ key: group$.key, songs }))
-                    )
-                ),
-                reduce(
-                    (acc, cur) => [...acc, cur],
-                    [] as { key: number | null; songs: Song[] }[]
-                )
+      switchMap((s) =>
+        of(...s).pipe(
+          groupBy((song) => song.tags.disk.no),
+          mergeMap((group$) =>
+            group$.pipe(
+              reduce((acc, cur) => [...acc, cur], [] as Song[]),
+              map((songs) => ({ key: group$.key, songs }))
             )
+          ),
+          reduce(
+            (acc, cur) => [...acc, cur],
+            [] as { key: number | null; songs: Song[] }[]
+          )
         )
+      )
     );
 
     this.menuItems$ = this.album$.pipe(
-        map((album) => [
-          {
-            text: 'Shuffle play',
-            icon: this.icons.shuffle,
-            click: () => this.helper.playAlbum(album.id, true),
-          },
-          {
-            text: 'Play next',
-            icon: this.icons.playlistPlay,
-            click: () => this.helper.addAlbumToQueue(album.id, true),
-          },
-          {
-            text: 'Add to queue',
-            icon: this.icons.playlistMusic,
-            click: () => this.helper.addAlbumToQueue(album.id),
-          },
-          {
-            text: 'Add to playlist',
-            icon: this.icons.playlistPlus,
-            click: () => this.helper.addAlbumToPlaylist(album.id),
-          },
-        ])
+      map((album) => [
+        {
+          text: 'Shuffle play',
+          icon: this.icons.shuffle,
+          click: () => this.helper.playAlbum(album.id, true),
+        },
+        {
+          text: 'Play next',
+          icon: this.icons.playlistPlay,
+          click: () => this.helper.addAlbumToQueue(album.id, true),
+        },
+        {
+          text: 'Add to queue',
+          icon: this.icons.playlistMusic,
+          click: () => this.helper.addAlbumToQueue(album.id),
+        },
+        {
+          text: 'Add to playlist',
+          icon: this.icons.playlistPlus,
+          click: () => this.helper.addAlbumToPlaylist(album.id),
+        },
+      ])
     );
   }
 
